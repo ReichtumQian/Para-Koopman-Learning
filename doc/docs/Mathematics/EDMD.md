@@ -1,6 +1,5 @@
 
 
-## Numerical Methods for Autonomous Dynamics
 
 Consider the autonomous (non-parametric) dynamical systems of the form
 
@@ -20,7 +19,9 @@ $$ \mathcal{K}(H) \subset H, $$
 
 at least approximately.
 
-We build $H$ as the span of a set of dictionary functions
+## Dictionary
+
+We build $H$ as the span of a set of *dictionary* functions
 $\{\psi_1,\psi_2,\cdots,\psi_{N_{\psi}}\}$ where $\psi_i \in L^2(X, m)$,
 with $\psi_i = g_i$ for $i = 1,2,\cdots,N_y$.
 Let we write $\Psi := (\psi_1,\psi_2,\cdots,\psi_{N_{\psi}})^T$,
@@ -31,6 +32,8 @@ $\mathrm{span}(\Psi)$. Thus $\mathcal{K}$ can be represented
 by a matrix $K \in \mathbb{R}^{N_{\psi} \times \mathbb{R}^{N_{\psi}}}$, satisfying
 
 $$ \mathcal{K} \Psi  = K \Psi. $$
+
+## EDMD Algorithm
 
 From a data science perspective, we collect data pairs
 $\{(\mathbf{x}_{n+1}^{(m)}, \mathbf{x}_n^{(m)})\}_{n,m=0}^{N-1,M-1}$,
@@ -45,16 +48,11 @@ $$ \hat{K} =  \operatorname*{argmin}_{K \in \mathbb{R}^{N_{\psi} \times N_{\psi}
 The solution is guaranteed to be unique when the number of data pairs is at
 least equal to or larger than the dimension of the dictionary $\Psi$.
 
-## Numerical Methods for Parametric Dynamics
+**Proposition**. The solution to the above problem is
 
-Consider the parametric dynamics
+$$ K = (YX^T)(XX^T)^+, $$
 
-$$
-\begin{align*}
-\mathbf{x}_{n+1} &= \mathbf{f}(\mathbf{x}_n, \mathbf{u}_n),\\
-\mathbf{y}_n &= \mathbf{g}(\mathbf{x}_n).
-\end{align*}
-$$
-
-
+where $X = [\Psi(x_n^{(0)}), \cdots, \Psi(x_n^{(N-1)})]$,
+$Y = [\Psi(x_{n+1}^{(0)}), \cdots \Psi(x_{n+1}^{(N-1)})]$,
+and $+$ the pseudo inverse.
 

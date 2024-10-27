@@ -1,7 +1,7 @@
 
 import numpy as np
 
-class Dictionary(object):
+class Dictionary:
   
   def __init__(self, function, dim_input, dim_output):
     """ Initialize the Dictionary

@@ -1,8 +1,7 @@
 
 A `Dictionary` is a vector function
 $\Psi = (\psi_1, \psi_2, \cdots, \psi_{N_\psi})^T$,
-where $\psi_i = g_i$ for $i = 1,\cdots,N_y$ (see
-[[ApproxKoopman.md|Approximation of Koopman]]).
+where $\psi_i = g_i$ for $i = 1,\cdots,N_y$.
 It supports batched operation
 $\Psi: \mathbb{R}^{N \times N_x} \rightarrow \mathbb{R}^{N \times N_{\psi}}$.
 

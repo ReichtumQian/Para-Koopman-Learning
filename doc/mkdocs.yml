@@ -76,7 +76,7 @@ nav:
     - Quick Start: "UserGuide/QuickStart.md"
   - Mathematics:
     - Parametric Koopman: "Mathematics/ParamKoopman.md"
-    - Finite-dimensional Approximation of Koopman: "Mathematics/ApproxKoopman.md"
+    - EDMD Algorithm: "Mathematics/EDMD.md"
   - Class References:
     - Dictionary:
       - Class Dictionary: "ClassReferences/Dictionary.md"

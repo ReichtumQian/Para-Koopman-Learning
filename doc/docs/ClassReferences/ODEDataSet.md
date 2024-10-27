@@ -15,6 +15,9 @@ it provides data for `EDMDSolver`, `EDMDDLSolver` and `ParamKoopmanDLSolver`.
 - `__init__(self, ode, flowmap)`
 - `__len__(self)`: Returns the number of dataset.
 - `__getitem__(self, idx)`: Returns the data at index `idx`, including `x`, `param` and `label`.
+- `data_x(self)`: Returns the state data.
+- `data_param(self)`: Returns the parameter data.
+- `labels(self)`: Returns the label data.
 - `generate_data(self, n_traj, traj_len, x_min, x_max, param_min, param_max, seed_x=11, seed_param=22)`
     - `n_traj` (int): The number of trajectories to generate.
     - `traj_len` (int): The length of each trajectory.

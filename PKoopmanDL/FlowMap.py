@@ -27,7 +27,7 @@ class ForwardEuler(FlowMap):
     Returns:
         ndarray: The state after one step of the Forward Euler method.
     """
-    n_step = int(self.t_step / self._dt)
+    n_step = int(self._t_step / self._dt)
     for _ in range(n_step):
       x = x + self._dt * ode.rhs(x, u)
     return x

@@ -1,9 +1,10 @@
 
 import numpy as np
+import scipy
 
 class Dictionary:
   
-  def __init__(self, function, dim_input, dim_output):
+  def __init__(self, function, dim_input, dim_output, dim_nontrain = 0):
     """ Initialize the Dictionary
 
     Args:
@@ -14,6 +15,7 @@ class Dictionary:
     self._function = function
     self._dim_input = dim_input
     self._dim_output = dim_output
+    self._dim_nontrain = dim_nontrain
   
   def __call__(self, x):
     """ Apply the dictionary
@@ -24,6 +26,19 @@ class Dictionary:
         ndarray: The output $\mathbb{R}^{N \times dim_output}$.
     """
     return self._function(x)
+  
+  @property
+  def dim_input(self):
+    return self._dim_input
+  
+  @property
+  def dim_output(self):
+    return self._dim_output
+
+  @property
+  def dim_nontrain(self):
+    return self._dim_nontrain
+
     
 class TrainableDictionary(Dictionary):
 
@@ -39,10 +54,9 @@ class TrainableDictionary(Dictionary):
         dim_output (int): The dimension of the output $N_{\psi}$.
         dim_nontrain (int): The number of non-trainable outputs $N_y$.
     """
-    self.__dim_nontrain = dim_nontrain
     self.__network = network
     function = lambda x: np.concatenate((nontrain_func(x), self.__network(x)), axis=0)
-    super().__init__(function, dim_input, dim_output)
+    super().__init__(function, dim_input, dim_output, dim_nontrain)
     
   def parameters(self):
     """Return the parameters of the trainable neural network.
@@ -52,3 +66,20 @@ class TrainableDictionary(Dictionary):
     """
     return self.__network.parameters()
 
+
+class RBFDictionary(Dictionary):
+  
+  def __init__(self, data_x, nontrain_func, dim_input, dim_output, dim_nontrain, regularizer):
+    dim_train = dim_output - dim_nontrain
+    centers = scipy.cluster.vq.kmeans(data_x, dim_train)[0]
+    def func(x):
+      rbfs = []
+      for n in range(dim_train):
+        r = scipy.spatial.distance.cdist(x, np.matrix(centers[n, :]))
+        rbf = scipy.special.xlogy(r**2, r + regularizer)
+        rbfs.append(rbf)
+      rbfs = np.array(rbfs)
+      rbfs = rbfs.T.reshape(x.shape[0], -1)
+      results = np.concatenate([nontrain_func(x), rbfs], axis=1)
+      return results
+    super().__init__(func, dim_input, dim_output, dim_nontrain)

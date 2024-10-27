@@ -1,5 +1,5 @@
 
-from Koopman import *
+from .Koopman import *
 import numpy as np
 
 class EDMDSolver:
@@ -21,8 +21,8 @@ class EDMDSolver:
     Returns:
         Koopman: The Koopman operator as a linear mapping function.
     """
-    data_x = dataset.data_x()
-    labels = dataset.labels()
+    data_x = dataset.data_x
+    labels = dataset.labels
     X = self._dictionary(data_x).T
     Y = self._dictionary(labels).T
     K = (Y @ X.T) @ np.linalg.pinv(X @ X.T)
@@ -41,5 +41,23 @@ class EDMDDLSolver(EDMDSolver):
     super().__init__(dictionary)
     self.__regularizer = regularizer
 
+  def solve(self, dataset, n_epochs, batch_size, tol):
+    def compute_K(data_x, labels):
+      X = self._dictionary(data_x).T
+      Y = self._dictionary(labels).T
+      regularizer = np.eye(self._dictionary.dim_output) * self.__regularizer
+      K = (Y @ X.T) @ np.linalg.pinv(X @ X.T + regularizer)
+      return K
+    
 
+class ParamKoopmanDLSolver:
+  def __init__(self, dictionary):
+    self.__dictionary = dictionary
 
+    
+    
+    
+    
+    
+    
+    

@@ -32,3 +32,12 @@ class AbstractODE:
     assert(x.shape[1] == self._dim)
     assert(u.shape[1] == self._param_dim)
     return self._rhs(x, u)
+
+  @property
+  def dim(self):
+    return self._dim
+  
+  @property
+  def param_dim(self):
+    return self._param_dim
+

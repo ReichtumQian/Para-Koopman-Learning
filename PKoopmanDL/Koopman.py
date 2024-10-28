@@ -1,4 +1,5 @@
 
+import numpy as np
 
 class Koopman:
   
@@ -20,6 +21,15 @@ class Koopman:
         ndarray: The output of the Koopman operator.
     """
     return self.__func(x)
+  
+  def predict(self, x0, dictionary, dim_nontrain, traj_len):
+    y = []
+    psi = dictionary(x0)
+    y.append(psi[:, :dim_nontrain])
+    for _ in range(traj_len - 1):
+      psi = self(psi)
+      y.append(psi[:, :dim_nontrain])
+    return np.transpose(np.array(y), (1, 0, 2)) # size: (N, traj_len, dim_nontrain)
   
 class ParamKoopman:
 

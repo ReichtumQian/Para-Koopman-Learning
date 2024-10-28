@@ -26,7 +26,7 @@ class EDMDSolver:
     X = self._dictionary(data_x).T
     Y = self._dictionary(labels).T
     K = (Y @ X.T) @ np.linalg.pinv(X @ X.T)
-    K_func = lambda x: K @ x
+    K_func = lambda x: (K @ x.T).T
     return Koopman(K_func)
 
 class EDMDDLSolver(EDMDSolver):
@@ -47,7 +47,8 @@ class EDMDDLSolver(EDMDSolver):
       Y = self._dictionary(labels).T
       regularizer = np.eye(self._dictionary.dim_output) * self.__regularizer
       K = (Y @ X.T) @ np.linalg.pinv(X @ X.T + regularizer)
-      return K
+      K_func = lambda x: (K @ x.T).T
+      return Koopman(K_func)
     
 
 class ParamKoopmanDLSolver:

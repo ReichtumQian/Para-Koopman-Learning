@@ -4,7 +4,7 @@ which is a finite-dimensional approximation of the parametric Koopman operator.
 
 ## Attributes
 
-- `__func` ((ndarray, ndarray) -> ndarray): It's a mapping
+- `__func` ((tensor, tensor) -> tensor): It's a mapping
   $K: \mathrm{span}(\Psi) \times U \rightarrow \mathrm{span}(\Psi)$,
   here we assume $U = \mathbb{R}^{N_u}$.
 

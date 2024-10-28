@@ -4,13 +4,20 @@ import torch
 
 class Koopman:
   
-  def __init__(self, func):
+  def __init__(self, func = None, K = None):
     """Initialize the Koopman instance.
 
     Args:
         func (tensor -> tensor): A mapping function representing the Koopman operator.
+        K (tensor): The Koopman matrix.
     """
-    self.__func = func
+    if K is None and func is None:
+      raise ValueError("Either K or func must be provided.")
+    elif func is not None:
+      self.__func = func
+    elif K is not None:
+      func = lambda x: (K @ x.t()).t()
+      self.__func = func
   
   def __call__(self, x):
     """Apply the Koopman operator on the input `x`.
@@ -34,26 +41,31 @@ class Koopman:
   
 class ParamKoopman:
 
-  def __init__(self, func):
+  def __init__(self, size_K, network):
     """Initialize the ParamKoopman instance.
 
     Args:
-        func ((tensor, tensor) -> tensor): A mapping function representing the parametric Koopman operator.
+        network ((tensor) -> tensor): Given the parameters `u`, returns the generated Koopman operator matrix.
     """
-    self.__func = func
+    self.__size = size_K
+    self.__network = network
 
-  def __call__(self, x, para):
-    """Apply the parametric Koopman operator on the inputs `x` and `para`.
+  def __call__(self, para, x):
+    """Generate a Koopman operator based on the given parameters.
 
     Args:
-        x (ndarray): The input data, expected to be of shape (N, N_psi).
-        para (ndarray): The parameter data, expected to be of shape (N, N_u).
+        para (tensor): The parameter data, expected to be of shape (N, N_u).
 
     Returns:
-        ndarray: The result of applying the parametric Koopman operator, with the same shape as `x`.
+        Koopman: The Koopman operator corresponding to the given parameters.
     """
-    return self.__func(x, para)
+    net_out = self.__network(para) 
+    K = net_out.reshape(net_out.size(0), self.__size, self.__size)
+    x = x.unsqueeze(2)
+    result = torch.bmm(K, x).squeeze(2)
+    return result
 
-
+  def parameters(self):
+    return self.__network.parameters()
 
 

@@ -8,7 +8,7 @@ $$ \dot{\mathbf{x}}(t) = \mathbf{f} (\mathbf{x}(t), \mathbf{u}). $$
 
 - `_dim` (int): The dimension of the ODE.
 - `_param_dim` (int): The dimension of the parameter $\mathbf{u}$.
-- `_rhs` ((ndarray, ndarray) -> ndarray): The right-hand side function of the ODE.
+- `_rhs` ((tensor, tensor) -> tensor): The right-hand side function of the ODE.
 
 !!! info
     Since the `rhs` function must accommodate both fixed parameters and variable parameters,
@@ -21,7 +21,7 @@ $$ \dot{\mathbf{x}}(t) = \mathbf{f} (\mathbf{x}(t), \mathbf{u}). $$
 - `__init__(self, dim, param_dim, rhs)`:
     - `dim` (int): The dimension of the ODE.
     - `param_dim` (int): The dimension of the parameter $\mathbf{u}$.
-    - `rhs` ((ndarray, ndarray) -> ndarray): The right-hand side function of the ODE.
+    - `rhs` ((tensor, tensor) -> tensor): The right-hand side function of the ODE.
       It must be able to handle 
       $\mathbb{R}^{N \times N_x} \times \mathbb{R}^{N \times N_u} \rightarrow \mathbb{R}^{N \times N_x}$ and
       $\mathbb{R}^{N \times N_x} \times \mathbb{R}^{1 \times N_u} \rightarrow \mathbb{R}^{N \times N_x}$.

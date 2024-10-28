@@ -29,8 +29,7 @@ class EDMDSolver:
     X = self._dictionary(data_x).t()
     Y = self._dictionary(labels).t()
     K = (Y @ X.t()) @ np.linalg.pinv(X @ X.t())
-    K_func = lambda x: (K @ x.t()).t()
-    return Koopman(K_func)
+    return Koopman(K)
 
 class EDMDDLSolver(EDMDSolver):
 
@@ -45,7 +44,7 @@ class EDMDDLSolver(EDMDSolver):
     self.__reg = reg
     self.__reg_final = reg_final
 
-  def solve(self, dataset, n_epochs, batch_size, tol = 1e-6, lr = 1e-3):
+  def solve(self, dataset, n_epochs, batch_size, tol = 1e-6, lr = 1e-4):
     def compute_K(data_x, labels, reg):
       X = self._dictionary(data_x).t()
       Y = self._dictionary(labels).t()
@@ -75,16 +74,36 @@ class EDMDDLSolver(EDMDSolver):
       if total_loss < tol:
         break
     K = compute_K(dataset.data_x, dataset.labels, self.__reg_final)
-    K_func = lambda x: (K @ x.t()).t()
-    return Koopman(K_func)
+    return Koopman(K)
 
           
-
-    
-
 class ParamKoopmanDLSolver:
   def __init__(self, dictionary):
     self.__dictionary = dictionary
+  
+  def solve(self, dataset, paramkoopman, n_epochs, batch_size, tol = 1e-6, lr_dic = 1e-4, lr_koop = 1e-4):
+    data_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    loss_func = torch.nn.MSELoss()
+    opt_dictionary = torch.optim.Adam(self.__dictionary.parameters(), lr = lr_dic)
+    opt_koopman = torch.optim.Adam(paramkoopman.parameters(), lr = lr_koop)
+    pbar = tqdm(range(n_epochs), desc="Training")
+    for _ in pbar:
+      total_loss = 0
+      for data_x, data_param, labels in data_loader:
+        opt_dictionary.zero_grad()
+        opt_koopman.zero_grad()
+        X = self.__dictionary(data_x)
+        X = paramkoopman(data_param, X).to(DEVICE)
+        Y = self.__dictionary(labels).to(DEVICE)
+        loss = loss_func(X, Y)
+        opt_dictionary.step()
+        opt_koopman.step()
+        total_loss = loss.item() * data_x.size(0)
+      loss_str = f"{total_loss:.2e}"
+      pbar.set_postfix(loss=loss_str)
+      if total_loss < tol:
+        break
+    return paramkoopman
 
     
     

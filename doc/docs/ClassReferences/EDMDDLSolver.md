@@ -3,13 +3,13 @@ The class `EDMDDLSolver` implements the EDMD-DL algorithm.
 
 ## Attributes
 
-- `__regularizer`: The regularizer $\lambda$ used in the computation of $K$.
+- `__reg`: The regularization factor $\lambda$ used in the computation of $K$.
 
 ## Methods
 
-- `__init__(self, dictionary, regularizer)`
+- `__init__(self, dictionary, reg)`
     - `dictionary` (TrainableDictionary)
-    - `regularizer` (float)
+    - `reg` (float)
 - `solve(self, dataset, n_epochs, batch_size, tol)`: 
   Applies the EDMD-DL algorithm to solve the system.
     - `dataset` (ODEDataSet): The dataset to solve.

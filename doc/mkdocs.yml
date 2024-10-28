@@ -96,5 +96,6 @@ nav:
       - Class ForwardEuler: "ClassReferences/ForwardEuler.md"
     - Data Management:
       - Class ODEDataSet: "ClassReferences/ODEDataSet.md"
+      - Class ParamODEDataSet: "ClassReferences/ParamODEDataSet.md"
     - Neural Network:
       - Class FullConnResNet: "ClassReferences/FullConnResNet.md"

@@ -12,13 +12,13 @@ $$ \mathcal{K} \phi = \mathcal{K} \mathbf{a}^T \Psi \approx \mathbf{a}^T K \Psi.
 
 ## Attributes
 
-- `__func` (ndarray -> ndarray): The mapping $K: \mathrm{span}(\Psi) \rightarrow \mathrm{span}(\Psi)$,
+- `__func` (tensor -> tensor): The mapping $K: \mathrm{span}(\Psi) \rightarrow \mathrm{span}(\Psi)$,
   which can be either a matrix or a neural network.
 
 ## Methods
 
 - `__init__(self, func)`
-    - `func` (ndarray -> ndarray): The mapping $K: \mathrm{span}(\Psi) \rightarrow \mathrm{span}(\Psi)$,
+    - `func` (tensor -> tensor): The mapping $K: \mathrm{span}(\Psi) \rightarrow \mathrm{span}(\Psi)$,
 - `__call__(self, x)`: Applies the Koopman operator,
   `x` should satisfy $x \in \mathbb{R}^{N \times N_{\psi}}$.
 

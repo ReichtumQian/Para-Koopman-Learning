@@ -1,5 +1,6 @@
 
 import numpy as np
+import torch
 
 class Koopman:
   
@@ -7,7 +8,7 @@ class Koopman:
     """Initialize the Koopman instance.
 
     Args:
-        func (ndarray -> ndarray): A mapping function representing the Koopman operator.
+        func (tensor -> tensor): A mapping function representing the Koopman operator.
     """
     self.__func = func
   
@@ -15,10 +16,10 @@ class Koopman:
     """Apply the Koopman operator on the input `x`.
 
     Args:
-        x (ndarray): The input to apply the Koopman operator, expected to be of shape (N, N_psi).
+        x (tensor): The input to apply the Koopman operator, expected to be of shape (N, N_psi).
 
     Returns:
-        ndarray: The output of the Koopman operator.
+        tensor : The output of the Koopman operator.
     """
     return self.__func(x)
   
@@ -29,7 +30,7 @@ class Koopman:
     for _ in range(traj_len - 1):
       psi = self(psi)
       y.append(psi[:, :dim_nontrain])
-    return np.transpose(np.array(y), (1, 0, 2)) # size: (N, traj_len, dim_nontrain)
+    return torch.stack(y, dim = 0).permute(1, 0, 2) # size: (N, traj_len, dim_nontrain)
   
 class ParamKoopman:
 
@@ -37,7 +38,7 @@ class ParamKoopman:
     """Initialize the ParamKoopman instance.
 
     Args:
-        func ((ndarray, ndarray) -> ndarray): A mapping function representing the parametric Koopman operator.
+        func ((tensor, tensor) -> tensor): A mapping function representing the parametric Koopman operator.
     """
     self.__func = func
 

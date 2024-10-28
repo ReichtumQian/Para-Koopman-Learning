@@ -21,11 +21,11 @@ class ForwardEuler(FlowMap):
 
     Args:
         ode (AbstractODE): The ODE system.
-        x (ndarray): The current state.
-        u (ndarray): The parameter of the ODE system.
+        x (tensor): The current state.
+        u (tensor): The parameter of the ODE system.
 
     Returns:
-        ndarray: The state after one step of the Forward Euler method.
+        tensor: The state after one step of the Forward Euler method.
     """
     n_step = int(self._t_step / self._dt)
     for _ in range(n_step):

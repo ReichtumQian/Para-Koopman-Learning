@@ -81,6 +81,7 @@ nav:
     - Dictionary:
       - Class Dictionary: "ClassReferences/Dictionary.md"
       - Class TrainableDictionary: "ClassReferences/TrainableDictionary.md"
+      - Class RBFDictionary: "ClassReferences/RBFDictionary.md"
     - Koopman Operator:
       - Class Koopman: "ClassReferences/Koopman.md"
       - Class ParamKoopman: "ClassReferences/ParamKoopman.md"

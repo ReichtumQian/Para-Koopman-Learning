@@ -18,13 +18,14 @@ class ODEDataSet(torch.utils.data.Dataset):
                     seed_x=11):
     np.random.seed(seed_x)
     x0 = np.random.uniform(low=x_min, high=x_max, size=(n_traj, self._ode.dim))
+    x0 = torch.from_numpy(x0).detach()
 
     data_x = [x0]
     for t in range(traj_len - 1):
       data_x.append(self._flowmap.step(self._ode, data_x[t], param))
 
     # Reshape and transpose data_x for the correct format
-    self._data_x = np.array(data_x).reshape(n_traj * traj_len, self._ode.dim)
+    self._data_x = torch.cat(data_x, dim = 0)
     self._labels = self._flowmap.step(
         self._ode, self._data_x, param)
     self._generated = True
@@ -79,13 +80,16 @@ class ParamODEDataSet(ODEDataSet):
 
     # Reshape and transpose data_x for the correct format
     self._data_x = np.array(data_x).reshape(n_traj * traj_len, self._ode.dim)
+    self._data_x = torch.from_numpy(self._data_x)
 
     # Repeat parameters for each trajectory length
     repeats_constant = traj_len * np.ones(shape=(n_traj, ), dtype=np.int32)
     self._data_param = np.repeat(param, repeats=repeats_constant, axis=0)
+    self._data_param = torch.from_numpy(self._data_param)
 
     self._labels = self._flowmap.step(
         self._ode, self._data_x, self._data_param)
+    self._labels = torch.from_numpy(self._labels)
 
     self._generated = True
 

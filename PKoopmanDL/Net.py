@@ -27,10 +27,10 @@ class FullConnResNet(torch.nn.Module):
     """Apply the network to the input `inputs`
 
     Args:
-        inputs (torch.Tensor): The input $\mathbb{R}^{N \times N_x}$.
+        inputs (tensor): The input $\mathbb{R}^{N \times N_x}$.
 
     Returns:
-        torch.Tensor: The output $\mathbb{R}^{N \times N_y}$.
+        tensor: The output $\mathbb{R}^{N \times N_y}$.
     """
     hidden_u = self.input_layer(inputs)
 

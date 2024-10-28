@@ -16,4 +16,7 @@ $\Psi: \mathbb{R}^{N \times N_x} \rightarrow \mathbb{R}^{N \times N_{\psi}}$.
 
 - `__init__(self, function, dim_input, dim_output)`
 - `__call__(self, x)`: Applies the dictionary to input `x`, which must satisfy $x \in \mathbb{R}^{N \times N_x}$.
+- `dim_input(self)`: Returns the input dimension $N_x$.
+- `dim_output(self)`: Returns the output dimension $N_{\psi}$.
+- `dim_nontrain(self)`: Returns the non-trainable dimension, usually the number of observable functions $N_y$.
 

@@ -56,7 +56,7 @@ class TrainableDictionary(Dictionary):
         dim_nontrain (int): The number of non-trainable outputs $N_y$.
     """
     self.__network = network
-    function = lambda x: torch.cat((nontrain_func(x), self.__network(x)), dim=0)
+    function = lambda x: torch.cat((nontrain_func(x), self.__network(x)), dim=1)
     super().__init__(function, dim_input, dim_output, dim_nontrain)
     
   def parameters(self):

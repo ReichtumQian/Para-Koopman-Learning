@@ -18,7 +18,7 @@ class ODEDataSet(torch.utils.data.Dataset):
                     seed_x=11):
     np.random.seed(seed_x)
     x0 = np.random.uniform(low=x_min, high=x_max, size=(n_traj, self._ode.dim))
-    x0 = torch.from_numpy(x0).detach()
+    x0 = torch.from_numpy(x0).to(dtype=torch.float32).detach()
 
     data_x = [x0]
     for t in range(traj_len - 1):

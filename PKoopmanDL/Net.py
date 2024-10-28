@@ -3,7 +3,7 @@ import torch
 
 class FullConnResNet(torch.nn.Module):
 
-  def __init__(self, input_dim=1, layer_size=[64, 64], output_dim=1, activation='tanh'):
+  def __init__(self, input_dim=1, output_dim=1, layer_size=[64, 64], activation='tanh'):
     """ Initialize the FullConnResNet instance.
 
     Args:
@@ -32,7 +32,7 @@ class FullConnResNet(torch.nn.Module):
     Returns:
         tensor: The output $\mathbb{R}^{N \times N_y}$.
     """
-    hidden_u = self.input_layer(inputs)
+    hidden_u = self._input_layer(inputs)
 
     for layer in self._hidden_layers:
       hidden_u = layer(hidden_u)

@@ -26,15 +26,15 @@ class EDMDSolver:
     """
     data_x = dataset.data_x
     labels = dataset.labels
-    X = self._dictionary(data_x).T
-    Y = self._dictionary(labels).T
-    K = (Y @ X.T) @ np.linalg.pinv(X @ X.T)
-    K_func = lambda x: (K @ x.T).T
+    X = self._dictionary(data_x).t()
+    Y = self._dictionary(labels).t()
+    K = (Y @ X.t()) @ np.linalg.pinv(X @ X.t())
+    K_func = lambda x: (K @ x.t()).t()
     return Koopman(K_func)
 
 class EDMDDLSolver(EDMDSolver):
 
-  def __init__(self, dictionary, regularizer):
+  def __init__(self, dictionary, reg, reg_final = 0.01):
     """ Initialize the EDMDDLSolver instance.
     
     Args:
@@ -42,29 +42,42 @@ class EDMDDLSolver(EDMDSolver):
         regularizer (float): The regularization parameter used in the algorithm.
     """
     super().__init__(dictionary)
-    self.__regularizer = regularizer
+    self.__reg = reg
+    self.__reg_final = reg_final
 
-  def solve(self, dataset, n_epochs, batch_size, tol, lr = 1e-3):
-    def compute_K(data_x, labels):
-      X = self._dictionary(data_x).T
-      Y = self._dictionary(labels).T
-      regularizer = np.eye(self._dictionary.dim_output) * self.__regularizer
-      K = (Y @ X.T) @ np.linalg.pinv(X @ X.T + regularizer)
-      # K_func = lambda x: (K @ x.T).T
-      # return Koopman(K_func)
-      return torch.from_numpy(K).to(DEVICE).detach()
+  def solve(self, dataset, n_epochs, batch_size, tol = 1e-6, lr = 1e-3):
+    def compute_K(data_x, labels, reg):
+      X = self._dictionary(data_x).t()
+      Y = self._dictionary(labels).t()
+      regularizer = torch.eye(self._dictionary.dim_output) * reg 
+      K = (Y @ X.t()) @ torch.linalg.pinv(X @ X.t() + regularizer)
+      return K.detach()
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
     loss_func = torch.nn.MSELoss()
     opt = torch.optim.Adam(self._dictionary.parameters(), lr = lr)
     self._dictionary.train()
-    with tqdm(range(n_epochs), desc="Training") as pbar:
-      for _ in pbar:
-        K = compute_K(dataset.data_x, dataset.labels)
+    pbar = tqdm(range(n_epochs), desc="Training")
+    for _ in pbar:
+      K = compute_K(dataset.data_x, dataset.labels, self.__reg)
+      K = K.to(DEVICE)
+      total_loss = 0
+      for __ in range(2):
         for data, labels in data_loader:
-          data = data.to(DEVICE)
-          labels = labels.to(DEVICE)
           opt.zero_grad()
-          X = K.t() @ self._dictionary(data)
+          X = self._dictionary(data).to(DEVICE) @ K.t()
+          Y = self._dictionary(labels).to(DEVICE)
+          loss = loss_func(X, Y)
+          loss.backward()
+          opt.step()
+          total_loss = loss.item() * data.size(0)
+      loss_str = f"{total_loss:.2e}"
+      pbar.set_postfix(loss=loss_str)
+      if total_loss < tol:
+        break
+    K = compute_K(dataset.data_x, dataset.labels, self.__reg_final)
+    K_func = lambda x: (K @ x.t()).t()
+    return Koopman(K_func)
+
           
 
     

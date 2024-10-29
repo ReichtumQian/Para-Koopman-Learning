@@ -65,7 +65,7 @@ class VanDerPolOscillator(AbstractODE):
     dim = 2
     param_dim = 1
     def rhs(x, u):
-      # u = (delta, beta, alpha)
+      # u = (alpha)
       param = u
       data_size = x.size(0)
       if u.size(0) == 1:
@@ -79,3 +79,8 @@ class VanDerPolOscillator(AbstractODE):
         raise ValueError("NaN or Inf detected in the result.")
       return result
     super().__init__(dim, param_dim, rhs)
+
+# class VanderPolMahieu(AbstractODE):
+
+
+

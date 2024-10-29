@@ -77,6 +77,8 @@ nav:
   - Mathematics:
     - Parametric Koopman: "Mathematics/ParamKoopman.md"
     - EDMD Algorithm: "Mathematics/EDMD.md"
+    - Duffing Equation: "Mathematics/Duffing.md"
+    - Van der Pol Mathieu: "Mathematics/VanDerPolMathieu.md"
   - Class References:
     - Dictionary:
       - Class Dictionary: "ClassReferences/Dictionary.md"

@@ -12,15 +12,20 @@ $$ \mathcal{K} \phi = \mathcal{K} \mathbf{a}^T \Psi \approx \mathbf{a}^T K \Psi.
 
 ## Attributes
 
-- `__func` (tensor -> tensor): The mapping $K: \mathrm{span}(\Psi) \rightarrow \mathrm{span}(\Psi)$,
-  which can be either a matrix or a neural network.
+- `_func` (tensor -> tensor): The mapping $K: \mathrm{span}(\Psi) \rightarrow \mathrm{span}(\Psi)$.
 
 ## Methods
 
-- `__init__(self, func)`
+- `__init__(self, K = None, func = None)`
+    - `K` (tensor): The matrix representation of the Koopman operator.
     - `func` (tensor -> tensor): The mapping $K: \mathrm{span}(\Psi) \rightarrow \mathrm{span}(\Psi)$,
 - `__call__(self, x)`: Applies the Koopman operator,
   `x` should satisfy $x \in \mathbb{R}^{N \times N_{\psi}}$.
+- `predict(self, x0, dictionary, dim_nontrain, traj_len)`: Predicts the trajectory of the system.
+    - `x0` (tensor): The initial state of the system.
+    - `dictionary` (Dictionary): The dictionary used to map the state to the feature space.
+    - `dim_nontrain` (int): The dimension of the non-trainable part of the state.
+    - `traj_len` (int): The length of the trajectory to predict.
 
 !!! info
     Understanding the `__call__` method of `Koopman`: Given the data set $\{x^{(n)}\}_{n = 1}^N$,

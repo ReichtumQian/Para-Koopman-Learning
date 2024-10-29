@@ -5,13 +5,15 @@ for initial value problems (IVPs).
 
 ## Attributes
 
-- `_dt` (float): The time step size.
+- `_t_step` (float): The time step size of the trajectory.
+- `_dt` (float): The time step size of the flow map.
 
 ## Methods
 
 - `__init__(self, dt)`
 - `step(self, ode, x, u)`: 
-  The input `x` should be in the form $\mathbb{R}^{N \times N_x}$,
-  `u` should be in the form $\mathbb{R}^{N \times N_u}$.
-  Returns the next state vector `x` after the ODE step.
+    - `ode` (AbstractODE): The ODE object.
+    - `x` (tensor): The state vector.
+    - `u` (tensor): The parameters input.
+    - Returns (tensor): The next state vector.
 

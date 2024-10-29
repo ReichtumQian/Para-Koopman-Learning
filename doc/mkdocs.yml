@@ -93,6 +93,8 @@ nav:
       - Class ParamKoopmanDLSolver: "ClassReferences/ParamKoopmanDLSolver.md"
     - ODEs:
       - Class AbstractODE: "ClassReferences/AbstractODE.md"
+      - Class DuffingOscillator: "ClassReferences/DuffingOscillator.md"
+      - Class VanDerPolOscillator: "ClassReferences/VanDerPolOscillator.md"
     - Flow Map:
       - Class FlowMap: "ClassReferences/FlowMap.md"
       - Class ForwardEuler: "ClassReferences/ForwardEuler.md"
@@ -100,4 +102,6 @@ nav:
       - Class ODEDataSet: "ClassReferences/ODEDataSet.md"
       - Class ParamODEDataSet: "ClassReferences/ParamODEDataSet.md"
     - Neural Network:
+      - Class FullConnBaseNet: "ClassReferences/FullConnBaseNet.md"
+      - Class FullConnNet: "ClassReferences/FullConnNet.md"
       - Class FullConnResNet: "ClassReferences/FullConnResNet.md"

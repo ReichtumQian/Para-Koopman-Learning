@@ -13,11 +13,11 @@ class Koopman:
     """
     if K is None and func is None:
       raise ValueError("Either K or func must be provided.")
-    elif func is not None:
-      self.__func = func
     elif K is not None:
       func = lambda x: (K @ x.t()).t()
-      self.__func = func
+      self._func = func
+    elif func is not None:
+      self._func = func
   
   def __call__(self, x):
     """Apply the Koopman operator on the input `x`.
@@ -28,7 +28,7 @@ class Koopman:
     Returns:
         tensor : The output of the Koopman operator.
     """
-    return self.__func(x)
+    return self._func(x)
   
   def predict(self, x0, dictionary, dim_nontrain, traj_len):
     y = []
@@ -47,8 +47,8 @@ class ParamKoopman:
     Args:
         network ((tensor) -> tensor): Given the parameters `u`, returns the generated Koopman operator matrix.
     """
-    self.__size = size_K
-    self.__network = network
+    self._size = size_K
+    self._network = network
 
   def __call__(self, para, x):
     """Generate a Koopman operator based on the given parameters.
@@ -59,14 +59,14 @@ class ParamKoopman:
     Returns:
         Koopman: The Koopman operator corresponding to the given parameters.
     """
-    net_out = self.__network(para) 
-    K = net_out.reshape(net_out.size(0), self.__size, self.__size)
+    net_out = self._network(para) 
+    K = net_out.reshape(net_out.size(0), self._size, self._size)
     x = x.unsqueeze(2)
     result = torch.bmm(K, x).squeeze(2)
     return result
 
   def parameters(self):
-    return self.__network.parameters()
+    return self._network.parameters()
 
 
   def predict(self, para, x0, dictionary, dim_nontrain, traj_len):

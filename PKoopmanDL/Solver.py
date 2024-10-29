@@ -41,8 +41,8 @@ class EDMDDLSolver(EDMDSolver):
         regularizer (float): The regularization parameter used in the algorithm.
     """
     super().__init__(dictionary)
-    self.__reg = reg
-    self.__reg_final = reg_final
+    self._reg = reg
+    self._reg_final = reg_final
 
   def solve(self, dataset, n_epochs, batch_size, tol = 1e-8, lr = 1e-4):
     def compute_K(data_x, labels, reg):
@@ -57,7 +57,7 @@ class EDMDDLSolver(EDMDSolver):
     self._dictionary.train()
     pbar = tqdm(range(n_epochs), desc="Training")
     for _ in pbar:
-      K = compute_K(dataset.data_x, dataset.labels, self.__reg)
+      K = compute_K(dataset.data_x, dataset.labels, self._reg)
       K = K.to(DEVICE)
       total_loss = 0
       num_samples = 0
@@ -76,18 +76,18 @@ class EDMDDLSolver(EDMDSolver):
       pbar.set_postfix(loss=loss_str)
       if total_loss < tol:
         break
-    K = compute_K(dataset.data_x, dataset.labels, self.__reg_final)
+    K = compute_K(dataset.data_x, dataset.labels, self._reg_final)
     return Koopman(K)
 
           
 class ParamKoopmanDLSolver:
   def __init__(self, dictionary):
-    self.__dictionary = dictionary
+    self._dictionary = dictionary
   
   def solve(self, dataset, paramkoopman, n_epochs, batch_size, tol = 1e-6, lr_dic = 1e-4, lr_koop = 1e-4):
     data_loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True)
     loss_func = torch.nn.MSELoss()
-    opt_dictionary = torch.optim.Adam(self.__dictionary.parameters(), lr = lr_dic)
+    opt_dictionary = torch.optim.Adam(self._dictionary.parameters(), lr = lr_dic)
     opt_koopman = torch.optim.Adam(paramkoopman.parameters(), lr = lr_koop)
     pbar = tqdm(range(n_epochs), desc="Training")
     for _ in pbar:

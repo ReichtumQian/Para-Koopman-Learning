@@ -5,8 +5,8 @@ mapping $\Psi: \mathbb{R}^{N \times N_x} \rightarrow \mathbb{R}^{N \times N_{\ps
 
 ## Attributes
 
-- `__dim_nontrain` (int): The number of non-trainable outputs.
-- `__network` (torch.nn.Module): The trainable neural network.
+- `_dim_nontrain` (int): The number of non-trainable outputs.
+- `_network` (torch.nn.Module): The trainable neural network.
 
 !!! info
     The attribute `_function`, inherited from `Dictionary`, is a function that combines the neural network with non-trainable outputs. The first `dim_nontrain` outputs are non-trainable.
@@ -22,5 +22,7 @@ mapping $\Psi: \mathbb{R}^{N \times N_x} \rightarrow \mathbb{R}^{N \times N_{\ps
     - `dim_output` (int): The dimension of the output $N_{\psi}$.
     - `dim_nontrain` (int): The number of non-trainable outputs $N_y$.
 - `parameters(self)`: Return the trainable parameters of the network `__network`.
+- `train(self)`: Set the network to training mode.
+- `eval(self)`: Set the network to evaluation mode.
 
 

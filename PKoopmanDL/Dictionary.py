@@ -55,8 +55,8 @@ class TrainableDictionary(Dictionary):
         dim_output (int): The dimension of the output $N_{\psi}$.
         dim_nontrain (int): The number of non-trainable outputs $N_y$.
     """
-    self.__network = network
-    function = lambda x: torch.cat((nontrain_func(x).to(x.device), self.__network(x).to(x.device)), dim=1)
+    self._network = network
+    function = lambda x: torch.cat((nontrain_func(x).to(x.device), self._network(x).to(x.device)), dim=1)
     super().__init__(function, dim_input, dim_output, dim_nontrain)
     
   def parameters(self):
@@ -65,22 +65,22 @@ class TrainableDictionary(Dictionary):
     Returns:
         iterable: An iterable of parameters of the neural network `__network`.
     """
-    return self.__network.parameters()
+    return self._network.parameters()
 
   def train(self):
     """Set the trainable neural network to training mode.
     """
-    self.__network.train()
+    self._network.train()
   
   def eval(self):
     """Set the trainable neural network to evaluation mode.
     """
-    self.__network.eval()
+    self._network.eval()
 
 
 class RBFDictionary(Dictionary):
   
-  def __init__(self, data_x, nontrain_func, dim_input, dim_output, dim_nontrain, regularizer):
+  def __init__(self, data_x, nontrain_func, dim_input, dim_output, dim_nontrain, reg):
     data_x = data_x.detach().numpy()
     dim_train = dim_output - dim_nontrain
     centers = scipy.cluster.vq.kmeans(data_x, dim_train)[0]
@@ -88,7 +88,7 @@ class RBFDictionary(Dictionary):
       rbfs = []
       for n in range(dim_train):
         r = scipy.spatial.distance.cdist(x, np.matrix(centers[n, :]))
-        rbf = scipy.special.xlogy(r**2, r + regularizer)
+        rbf = scipy.special.xlogy(r**2, r + reg)
         rbfs.append(rbf)
       rbfs = np.array(rbfs)
       rbfs = rbfs.T.reshape(x.shape[0], -1)

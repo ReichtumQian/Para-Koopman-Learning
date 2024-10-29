@@ -1,6 +1,6 @@
 
-The class `FullConnResNet` is a subclass of [[FullConnBaseNet.md | FullConnBaseNet]].
-It represents a fully connected residual neural network.
+The class `FullConnNet` is a subclass of [[FullConnBaseNet.md | FullConnBaseNet]].
+It is a fully connected neural network.
 
 ## Methods
 

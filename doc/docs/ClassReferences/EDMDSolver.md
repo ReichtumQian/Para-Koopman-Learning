@@ -11,7 +11,7 @@ The class `EDMDSolver` implements the EDMD algorithm.
 - `solve(self, dataset)`: 
   Applies the EDMD algorithm to solve the system,
     - `dataset` (ODEDataSet): The dataset to solve.
-    - `return` (Koopman): The Koopman operator.
+    - Returns (Koopman): The Koopman operator corresponding to the dictionary.
 
 
 

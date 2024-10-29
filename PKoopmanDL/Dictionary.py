@@ -71,6 +71,11 @@ class TrainableDictionary(Dictionary):
     """Set the trainable neural network to training mode.
     """
     self.__network.train()
+  
+  def eval(self):
+    """Set the trainable neural network to evaluation mode.
+    """
+    self.__network.eval()
 
 
 class RBFDictionary(Dictionary):

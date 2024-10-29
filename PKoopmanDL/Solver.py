@@ -44,7 +44,7 @@ class EDMDDLSolver(EDMDSolver):
     self.__reg = reg
     self.__reg_final = reg_final
 
-  def solve(self, dataset, n_epochs, batch_size, tol = 1e-6, lr = 1e-4):
+  def solve(self, dataset, n_epochs, batch_size, tol = 1e-8, lr = 1e-4):
     def compute_K(data_x, labels, reg):
       X = self._dictionary(data_x).t()
       Y = self._dictionary(labels).t()
@@ -60,6 +60,7 @@ class EDMDDLSolver(EDMDSolver):
       K = compute_K(dataset.data_x, dataset.labels, self.__reg)
       K = K.to(DEVICE)
       total_loss = 0
+      num_samples = 0
       for __ in range(2):
         for data, labels in data_loader:
           opt.zero_grad()
@@ -69,6 +70,8 @@ class EDMDDLSolver(EDMDSolver):
           loss.backward()
           opt.step()
           total_loss = loss.item() * data.size(0)
+          num_samples += data.size(0)
+      total_loss /= num_samples
       loss_str = f"{total_loss:.2e}"
       pbar.set_postfix(loss=loss_str)
       if total_loss < tol:

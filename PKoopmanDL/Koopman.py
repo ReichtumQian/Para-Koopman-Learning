@@ -4,7 +4,7 @@ import torch
 
 class Koopman:
   
-  def __init__(self, func = None, K = None):
+  def __init__(self, K = None, func = None):
     """Initialize the Koopman instance.
 
     Args:

@@ -69,3 +69,12 @@ class ParamKoopman:
     return self.__network.parameters()
 
 
+  def predict(self, para, x0, dictionary, dim_nontrain, traj_len):
+    y = []
+    psi = dictionary(x0)
+    y.append(psi[:, :dim_nontrain])
+    for _ in range(traj_len - 1):
+      psi = self(para, psi)
+      y.append(psi[:, :dim_nontrain])
+    return torch.stack(y, dim = 0).permute(1, 0, 2) # size: (N, traj_len, dim_nontrain)
+

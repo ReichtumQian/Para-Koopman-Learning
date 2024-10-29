@@ -102,6 +102,7 @@ class ParamKoopmanDLSolver:
         opt_dictionary.step()
         opt_koopman.step()
         total_loss = loss.item() * data_x.size(0)
+      total_loss = total_loss / len(dataset)
       loss_str = f"{total_loss:.2e}"
       pbar.set_postfix(loss=loss_str)
       if total_loss < tol:

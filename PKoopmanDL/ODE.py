@@ -49,8 +49,33 @@ class DuffingOscillator(AbstractODE):
       if u.size(0) == 1:
         param = u.expand(data_size, param_dim)
       result = torch.stack(
-        (x[:, 1], - param[:, 0] * x[:, 1] - x[:, 0] * (param[:, 1] + param[:, 2] * x[:, 0]**2)), axis = 1
+        (x[:, 1], - param[:, 0] * x[:, 1] - x[:, 0] * (param[:, 1] + param[:, 2] * x[:, 0]**2)), dim = 1
       )
+      if torch.isnan(result).any() or torch.isinf(result).any():
+        print(torch.nonzero(torch.isnan(result)))
+        print(torch.nonzero(torch.isinf(result)))
+        raise ValueError("NaN or Inf detected in the result.")
       return result
     super().__init__(dim, param_dim, rhs)
         
+
+class VanDerPolOscillator(AbstractODE):
+
+  def __init__(self):
+    dim = 2
+    param_dim = 1
+    def rhs(x, u):
+      # u = (delta, beta, alpha)
+      param = u
+      data_size = x.size(0)
+      if u.size(0) == 1:
+        param = u.expand(data_size, param_dim)
+      result = torch.stack(
+        (x[:, 1], param[:, 0] * (1 - x[:, 0] ** 2) * x[:, 1] - x[:, 0]), dim = 1
+      )
+      if torch.isnan(result).any() or torch.isinf(result).any():
+        print(torch.nonzero(torch.isnan(result)))
+        print(torch.nonzero(torch.isinf(result)))
+        raise ValueError("NaN or Inf detected in the result.")
+      return result
+    super().__init__(dim, param_dim, rhs)

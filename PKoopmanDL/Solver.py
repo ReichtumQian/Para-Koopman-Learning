@@ -95,9 +95,9 @@ class ParamKoopmanDLSolver:
       for data_x, data_param, labels in data_loader:
         opt_dictionary.zero_grad()
         opt_koopman.zero_grad()
-        X = self.__dictionary(data_x)
+        X = self._dictionary(data_x)
         X = paramkoopman(data_param, X).to(DEVICE)
-        Y = self.__dictionary(labels).to(DEVICE)
+        Y = self._dictionary(labels).to(DEVICE)
         loss = loss_func(X, Y)
         loss.backward()
         opt_dictionary.step()

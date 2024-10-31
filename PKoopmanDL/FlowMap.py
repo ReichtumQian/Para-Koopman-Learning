@@ -60,7 +60,7 @@ class BackwardEuler(FlowMap):
         return result.flatten()
       x_numpy = fsolve(equ, x_numpy)
       x_numpy = np.reshape(x_numpy, (N, d))
-    return torch.from_numpy(x_numpy)
+    return torch.from_numpy(x_numpy).to(torch.float32)
 
 class RungeKutta4(FlowMap):
   def step(self, ode, x, u):

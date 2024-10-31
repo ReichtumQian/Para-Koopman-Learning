@@ -1,0 +1,28 @@
+{
+  "solver_type": "EDMDDL",
+  "equ_type": "Duffing",
+  "flowmap": {
+    "dt": 1e-3,
+    "t_step": 0.25
+  },
+  "dataset": {
+    "n_traj": 1000,
+    "traj_len": 10,
+    "x_min": -2,
+    "x_max": 2,
+    "param": [0.5, -1.0, 1.0]
+  },
+  "dictionary": {
+    "dim_output": 25,
+    "dim_nontrain": 3,
+    "dic_layer_sizes": [100, 100, 100]
+  },
+  "solver": {
+    "reg": 0.1,
+    "reg_final": 0.01,
+    "n_epochs": 1000,
+    "batch_size": 1000,
+    "tol": 1e-9,
+    "dic_lr": 1e-4
+  }
+}

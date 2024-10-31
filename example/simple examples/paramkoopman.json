@@ -1,0 +1,30 @@
+
+{
+  "solver_type": "paramkoopman",
+  "equ_type": "Duffing",
+  "flowmap": {
+    "dt": 1e-3,
+    "t_step": 0.25
+  },
+  "dataset": {
+    "n_traj": 1000,
+    "traj_len": 10,
+    "x_min": -2,
+    "x_max": 2,
+    "param_min": [0.0, -2.0, 0.0],
+    "param_max": [1.0, 2.0, 2.0]
+  },
+  "dictionary": {
+    "dim_output": 25,
+    "dim_nontrain": 3,
+    "dic_layer_sizes": [100, 100, 100]
+  },
+  "solver": {
+    "n_epochs": 1000,
+    "batch_size": 1000,
+    "tol": 1e-9,
+    "dic_lr": 1e-4,
+    "koopman_layer_sizes": [256, 256],
+    "koopman_lr": 1e-4
+  }
+}

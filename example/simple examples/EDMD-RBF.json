@@ -1,0 +1,21 @@
+{
+  "solver_type": "EDMD-RBF",
+  "equ_type": "Duffing",
+  "flowmap": {
+    "dt": 1e-3,
+    "t_step": 0.25
+  },
+  "dataset": {
+    "n_traj": 1000,
+    "traj_len": 10,
+    "x_min": -2,
+    "x_max": 2,
+    "param": [0.5, -1.0, 1.0]
+  },
+  "dictionary": {
+    "dim_output": 100,
+    "dim_nontrain": 3,
+    "reg": 1e-4
+  },
+  "solver": {}
+}

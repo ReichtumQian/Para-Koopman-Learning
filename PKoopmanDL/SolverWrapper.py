@@ -52,8 +52,9 @@ class SolverWrapper:
     # generate dataset
     if self.solver_type == 'paramkoopman':
       self.seed_param = self._data['dataset']['seed_param']
+      self.n_traj_per_param = self._data['dataset']['n_traj_per_param']
       self.dataset = pkdl.ParamODEDataSet(self.ode, self.flowmap)
-      self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min, self.x_max, self.param_min, self.param_max, self.seed_x, self.seed_param)
+      self.dataset.generate_data(self.n_traj, self.n_traj_per_param, self.traj_len, self.x_min, self.x_max, self.param_min, self.param_max, self.seed_x, self.seed_param)
     elif self.solver_type == 'EDMD-RBF' or 'EDMDDL':
       self.dataset = pkdl.ODEDataSet(self.ode, self.flowmap)
       self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min, self.x_max, self.param, self.seed_x)

@@ -61,6 +61,7 @@ class ParamODEDataSet(ODEDataSet):
 
   def generate_data(self,
                     n_traj,
+                    n_traj_per_param,
                     traj_len,
                     x_min,
                     x_max,
@@ -98,7 +99,8 @@ class ParamODEDataSet(ODEDataSet):
     np.random.seed(seed_param)
     param = np.random.uniform(low=0,
                               high=1,
-                              size=(n_traj, self._ode.param_dim))
+                              size=(int(n_traj/n_traj_per_param), self._ode.param_dim))
+    param = np.repeat(param, n_traj_per_param, axis=0)
     param = param * (param_max - param_min) + param_min
     param = torch.from_numpy(param).to(dtype=torch.float32).detach()
 

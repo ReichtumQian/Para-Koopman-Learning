@@ -10,29 +10,34 @@ class SolverWrapper:
       self._data = json.load(f)
     self.solver_type = self._data['solver_type']
     self.equ_type = self._data['equ_type']
-    self.init_flowmap()
-    self.init_dataset()
-    self.init_dictionary(nontrain_func)
-    self.init_solver()
+    self._init_flowmap()
+    self._init_dataset()
+    self._init_dictionary(nontrain_func)
+    self._init_solver()
 
-  def init_flowmap(self):
+  def _init_flowmap(self):
     self.dt = self._data['flowmap']['dt']
     self.t_step = self._data['flowmap']['t_step']
     self.flowmap = pkdl.ForwardEuler(self.t_step, self.dt)
 
-  def init_dataset(self):
+  def _init_dataset(self):
     if self.equ_type == "Duffing":
       self.ode = pkdl.DuffingOscillator()
+    elif self.equ_type == "vdp":
+      self.ode = pkdl.VanDerPolOscillator()
     else:
       raise ValueError("Unknown equation type")
     self.n_traj = self._data['dataset']['n_traj']
     self.traj_len = self._data['dataset']['traj_len']
     self.x_min = self._data['dataset']['x_min']
     self.x_max = self._data['dataset']['x_max']
+    self.seed_x = self._data['dataset']['seed_x']
     if isinstance(self.x_min, list):
       self.x_min = torch.tensor(self.x_min).unsqueeze(0)
     if isinstance(self.x_max, list):
       self.x_max = torch.tensor(self.x_max).unsqueeze(0)
+    
+    # deal with param
     if self.solver_type == 'paramkoopman':
       self.param_min = self._data['dataset']['param_min']
       self.param_max = self._data['dataset']['param_max']
@@ -46,15 +51,16 @@ class SolverWrapper:
     
     # generate dataset
     if self.solver_type == 'paramkoopman':
+      self.seed_param = self._data['dataset']['seed_param']
       self.dataset = pkdl.ParamODEDataSet(self.ode, self.flowmap)
-      self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min, self.x_max, self.param_min, self.param_max)
+      self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min, self.x_max, self.param_min, self.param_max, self.seed_x, self.seed_param)
     elif self.solver_type == 'EDMD-RBF' or 'EDMDDL':
       self.dataset = pkdl.ODEDataSet(self.ode, self.flowmap)
-      self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min, self.x_max, self.param)
+      self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min, self.x_max, self.param, self.seed_x)
     else:
       raise ValueError('solver_type must be paramkoopman, EDMD-RBF or EDMDDL')
   
-  def init_dictionary(self, nontrain_func):
+  def _init_dictionary(self, nontrain_func):
     self.dim_output = self._data['dictionary']['dim_output']
     self.dim_nontrain = self._data['dictionary']['dim_nontrain']
     if self.solver_type == "EDMD-RBF":
@@ -71,7 +77,7 @@ class SolverWrapper:
     else:
       raise ValueError('solver_type must be paramkoopman, EDMD-RBF or EDMDDL')
     
-  def init_solver(self):
+  def _init_solver(self):
     if self.solver_type == "EDMD-RBF":
       self.solver = pkdl.EDMDSolver(self.dictionary)
     elif self.solver_type == "EDMDDL":
@@ -100,7 +106,7 @@ class SolverWrapper:
       return self.solver.solve(self.dataset, PK, n_epochs, batch_size, tol, dic_lr, koopman_lr)
     else:
       raise ValueError('solver_type must be paramkoopman, EDMD-RBF or EDMDDL')
-
+  
       
 
       

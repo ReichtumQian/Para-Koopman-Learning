@@ -10,7 +10,8 @@
     "traj_len": 10,
     "x_min": -2,
     "x_max": 2,
-    "param": [0.5, -1.0, 1.0]
+    "param": [0.5, -1.0, 1.0],
+    "seed_x": 11
   },
   "dictionary": {
     "dim_output": 100,

@@ -1,4 +1,8 @@
 
+import numpy as np
+import torch
+from scipy.optimize import fsolve
+
 
 class FlowMap:
   
@@ -30,4 +34,51 @@ class ForwardEuler(FlowMap):
     n_step = int(self._t_step / self._dt)
     for _ in range(n_step):
       x = x + self._dt * ode.rhs(x, u)
+    return x
+
+class BackwardEuler(FlowMap):
+
+  def step(self, ode, x, u):
+    """Apply one step of the Backward Euler method.
+
+    Args:
+        ode (AbstractODE): The ODE system.
+        x (tensor): The current state.
+        u (tensor): The parameter of the ODE system.
+
+    Returns:
+        tensor: The state after one step of the Backward Euler method.
+    """
+    n_step = int(self._t_step / self._dt)
+    x_numpy = x.detach().numpy()
+    N = x_numpy.shape[0]
+    d = x_numpy.shape[1]
+    for _ in range(n_step):
+      def equ(x_next):
+        x_next = np.reshape(x_next, (N, d))
+        result = x_next - x_numpy - self._dt * ode.rhs(torch.from_numpy(x_next), u).numpy()
+        return result.flatten()
+      x_numpy = fsolve(equ, x_numpy)
+      x_numpy = np.reshape(x_numpy, (N, d))
+    return torch.from_numpy(x_numpy)
+
+class RungeKutta4(FlowMap):
+  def step(self, ode, x, u):
+    """Apply one step of the 4th-order Runge-Kutta method.
+
+    Args:
+        ode (AbstractODE): The ODE system.
+        x (tensor): The current state.
+        u (tensor): The parameter of the ODE system.
+
+    Returns:
+        tensor: The state after one step of the 4th-order Runge-Kutta method.
+    """
+    n_step = int(self._t_step / self._dt)
+    for _ in range(n_step):
+      k1 = self._dt * ode.rhs(x, u)
+      k2 = self._dt * ode.rhs(x + 0.5 * k1, u)
+      k3 = self._dt * ode.rhs(x + 0.5 * k2, u)
+      k4 = self._dt * ode.rhs(x + k3, u)
+      x = x + (k1 + 2 * k2 + 2 * k3 + k4) / 6
     return x

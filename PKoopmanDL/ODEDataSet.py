@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-
+import numbers
 
 class ODEDataSet(torch.utils.data.Dataset):
 
@@ -10,8 +10,15 @@ class ODEDataSet(torch.utils.data.Dataset):
     self._generated = False
 
   def generate_data(self, n_traj, traj_len, x_min, x_max, param, seed_x=11):
+    if isinstance(x_min, numbers.Number):
+      x_min = np.ones((1, self._ode.dim)) * x_min
+    if isinstance(x_max, numbers.Number):
+      x_max = np.ones((1, self._ode.dim)) * x_max
+    x_min = np.broadcast_to(x_min, (n_traj, self._ode.dim))
+    x_max = np.broadcast_to(x_max, (n_traj, self._ode.dim))
     np.random.seed(seed_x)
-    x0 = np.random.uniform(low=x_min, high=x_max, size=(n_traj, self._ode.dim))
+    x0 = np.random.uniform(low=0, high=1, size=(n_traj, self._ode.dim))
+    x0 = x0 * (x_max - x_min) + x_min
     x0 = torch.from_numpy(x0).to(dtype=torch.float32).detach()
 
     data_x = [x0]
@@ -57,14 +64,30 @@ class ParamODEDataSet(ODEDataSet):
                     param_max,
                     seed_x=11,
                     seed_param=22):
+    # generate x
+    if isinstance(x_min, numbers.Number):
+      x_min = np.ones((1, self._ode.dim)) * x_min
+    if isinstance(x_max, numbers.Number):
+      x_max = np.ones((1, self._ode.dim)) * x_max
+    x_min = np.broadcast_to(x_min, (n_traj, self._ode.dim))
+    x_max = np.broadcast_to(x_max, (n_traj, self._ode.dim))
     np.random.seed(seed_x)
-    x0 = np.random.uniform(low=x_min, high=x_max, size=(n_traj, self._ode.dim))
+    x0 = np.random.uniform(low=0, high=1, size=(n_traj, self._ode.dim))
+    x0 = x0 * (x_max - x_min) + x_min
     x0 = torch.from_numpy(x0).to(dtype=torch.float32).detach()
 
+    # generate param
+    if isinstance(param_min, numbers.Number):
+      param_min = np.ones((1, self._ode.param_dim)) * param_min
+    if isinstance(param_max, numbers.Number):
+      param_max = np.ones((1, self._ode.param_dim)) * param_max
+    param_min = np.broadcast_to(param_min, (n_traj, self._ode.param_dim))
+    param_max = np.broadcast_to(param_max, (n_traj, self._ode.param_dim))
     np.random.seed(seed_param)
-    param = np.random.uniform(low=param_min,
-                              high=param_max,
+    param = np.random.uniform(low=0,
+                              high=1,
                               size=(n_traj, self._ode.param_dim))
+    param = param * (param_max - param_min) + param_min
     param = torch.from_numpy(param).to(dtype=torch.float32).detach()
 
     data_x = [x0]

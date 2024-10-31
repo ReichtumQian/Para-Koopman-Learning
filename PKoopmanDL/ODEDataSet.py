@@ -14,6 +14,10 @@ class ODEDataSet(torch.utils.data.Dataset):
       x_min = np.ones((1, self._ode.dim)) * x_min
     if isinstance(x_max, numbers.Number):
       x_max = np.ones((1, self._ode.dim)) * x_max
+    if isinstance(x_min, torch.Tensor):
+      x_min = x_min.numpy()
+    if isinstance(x_max, torch.Tensor):
+      x_max = x_max.numpy()
     x_min = np.broadcast_to(x_min, (n_traj, self._ode.dim))
     x_max = np.broadcast_to(x_max, (n_traj, self._ode.dim))
     np.random.seed(seed_x)
@@ -69,6 +73,10 @@ class ParamODEDataSet(ODEDataSet):
       x_min = np.ones((1, self._ode.dim)) * x_min
     if isinstance(x_max, numbers.Number):
       x_max = np.ones((1, self._ode.dim)) * x_max
+    if isinstance(x_min, torch.Tensor):
+      x_min = x_min.numpy()
+    if isinstance(x_max, torch.Tensor):
+      x_max = x_max.numpy()
     x_min = np.broadcast_to(x_min, (n_traj, self._ode.dim))
     x_max = np.broadcast_to(x_max, (n_traj, self._ode.dim))
     np.random.seed(seed_x)
@@ -81,6 +89,10 @@ class ParamODEDataSet(ODEDataSet):
       param_min = np.ones((1, self._ode.param_dim)) * param_min
     if isinstance(param_max, numbers.Number):
       param_max = np.ones((1, self._ode.param_dim)) * param_max
+    if isinstance(param_min, torch.Tensor):
+      param_min = param_min.numpy()
+    if isinstance(param_max, torch.Tensor):
+      param_max = param_max.numpy()
     param_min = np.broadcast_to(param_min, (n_traj, self._ode.param_dim))
     param_max = np.broadcast_to(param_max, (n_traj, self._ode.param_dim))
     np.random.seed(seed_param)

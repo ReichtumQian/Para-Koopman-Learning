@@ -8,12 +8,12 @@
   "dataset": {
     "n_traj": 10000,
     "n_traj_per_param": 100,
-    "traj_len": 10,
+    "traj_len": 50,
     "x_min": -2,
     "x_max": 2,
     "param_min": [0.0, -2.0, 0.0],
     "param_max": [1.0, 2.0, 2.0],
-    "seed_x": 11,
+    "seed_x": 123,
     "seed_param": 22
   },
   "dictionary": {
@@ -22,7 +22,7 @@
     "dic_layer_sizes": [100, 100, 100]
   },
   "solver": {
-    "n_epochs": 100,
+    "n_epochs": 10,
     "batch_size": 1000,
     "tol": 1e-9,
     "dic_lr": 1e-4,

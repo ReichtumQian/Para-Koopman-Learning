@@ -80,6 +80,12 @@ class ParamKoopman:
       y.append(psi[:, :dim_nontrain])
     return torch.stack(y, dim = 0).permute(1, 0, 2) # size: (N, traj_len, dim_nontrain)
   
+  def train(self):
+    self._network.train()
+  
+  def eval(self):
+    self._network.eval()
+  
   def save(self, path):
     data_to_save = {
       'state_dict': self._network.state_dict(),

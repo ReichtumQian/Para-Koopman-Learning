@@ -8,13 +8,14 @@
   "dataset": {
     "n_traj": 10000,
     "n_traj_per_param": 100,
-    "traj_len": 10,
+    "traj_len": 50,
     "x_min": -2,
     "x_max": 2,
     "param_min": [0.0, -2.0, 0.0],
     "param_max": [1.0, 2.0, 2.0],
     "seed_x": 11,
-    "seed_param": 22
+    "seed_param": 22,
+    "train_ratio": 0.8
   },
   "dictionary": {
     "dim_output": 25,

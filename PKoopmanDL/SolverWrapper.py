@@ -53,9 +53,16 @@ class SolverWrapper:
     if self.solver_type == 'paramkoopman':
       self.seed_param = self._data['dataset']['seed_param']
       self.n_traj_per_param = self._data['dataset']['n_traj_per_param']
+      self.train_ratio = self._data['dataset']['train_ratio']
       self.dataset = pkdl.ParamODEDataSet(self.ode, self.flowmap)
       self.dataset.generate_data(self.n_traj, self.n_traj_per_param, self.traj_len, self.x_min, self.x_max, self.param_min, self.param_max, self.seed_x, self.seed_param)
-    elif self.solver_type == 'EDMD-RBF' or 'EDMDDL':
+      self.train_dataset, self.val_dataset = torch.utils.data.random_split(self.dataset, [int(self.train_ratio * len(self.dataset)), len(self.dataset) - int(self.train_ratio * len(self.dataset))])
+    elif self.solver_type == "EDMDDL":
+      self.train_ratio = self._data['dataset']['train_ratio']
+      self.dataset = pkdl.ODEDataSet(self.ode, self.flowmap)
+      self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min, self.x_max, self.param, self.seed_x)
+      self.train_dataset, self.val_dataset = torch.utils.data.random_split(self.dataset, [int(self.train_ratio * len(self.dataset)), len(self.dataset) - int(self.train_ratio * len(self.dataset))])
+    elif self.solver_type == 'EDMD-RBF':
       self.dataset = pkdl.ODEDataSet(self.ode, self.flowmap)
       self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min, self.x_max, self.param, self.seed_x)
     else:
@@ -98,13 +105,13 @@ class SolverWrapper:
     tol = self._data['solver']['tol']
     dic_lr = self._data['solver']['dic_lr']
     if self.solver_type == "EDMDDL":
-      return self.solver.solve(self.dataset, n_epochs, batch_size, tol, dic_lr)
+      return self.solver.solve(self.train_dataset, self.val_dataset, n_epochs, batch_size, tol, dic_lr)
     elif self.solver_type == "paramkoopman":
       self.koopman_layer_sizes = self._data['solver']['koopman_layer_sizes']
       koopman_lr = self._data['solver']['koopman_lr']
       network = pkdl.FullConnNet(self.ode.param_dim, self.dim_output**2, self.koopman_layer_sizes)
       PK = pkdl.ParamKoopman(self.dim_output, network)
-      return self.solver.solve(self.dataset, PK, n_epochs, batch_size, tol, dic_lr, koopman_lr)
+      return self.solver.solve(self.train_dataset, self.val_dataset, PK, n_epochs, batch_size, tol, dic_lr, koopman_lr)
     else:
       raise ValueError('solver_type must be paramkoopman, EDMD-RBF or EDMDDL')
   

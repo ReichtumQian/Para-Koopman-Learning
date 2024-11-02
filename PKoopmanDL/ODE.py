@@ -80,7 +80,5 @@ class VanDerPolOscillator(AbstractODE):
       return result
     super().__init__(dim, param_dim, rhs)
 
-# class VanderPolMahieu(AbstractODE):
-
 
 

@@ -15,6 +15,14 @@ class FlowMap:
     self._t_step = t_step
     self._dt = dt
 
+  def generate_traj_data(self, ode, x0, u, traj_len):
+    x = [x0]
+    for t in range(traj_len - 1):
+      x.append(self.step(ode, x[-1], u))
+    x = torch.cat(x, dim=0)
+    return x
+      
+
   def step(self, ode, x, u):
     return NotImplementedError
 

@@ -7,7 +7,6 @@ class Dictionary:
   
   def __init__(self, function, dim_input, dim_output, dim_nontrain = 0):
     """ Initialize the Dictionary
-
     Args:
         function (tensor -> tensor): A batched vector function representing the basis functions.
         dim_input (int): The dimension of the input.
@@ -20,7 +19,6 @@ class Dictionary:
   
   def __call__(self, x):
     """ Apply the dictionary
-
     Args:
         x (tensor): The input $\mathbb{R}^{N \times dim_input}$.
     Returns:
@@ -45,7 +43,6 @@ class TrainableDictionary(Dictionary):
 
   def __init__(self, network, nontrain_func, dim_input, dim_output, dim_nontrain):
     """ Initialize the TrainableDictionary
-
     Args:
         network (torch.nn.Module): The trainable neural network,
             which is a mapping $\mathbb{R}^{N \times N_x} \rightarrow \mathbb{R}^{N \times (N_{\psi} - N_y)}$.

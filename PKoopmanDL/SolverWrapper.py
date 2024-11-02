@@ -93,6 +93,7 @@ class SolverWrapper:
       self.reg_final = self._data['solver']['reg_final']
       self.solver = pkdl.EDMDDLSolver(self.dictionary, self.reg, self.reg_final)
     elif self.solver_type == "paramkoopman":
+      self.koopman_layer_sizes = self._data['solver']['koopman_layer_sizes']
       self.solver = pkdl.ParamKoopmanDLSolver(self.dictionary)
     else:
       raise ValueError('solver_type must be paramkoopman, EDMD-RBF or EDMDDL')
@@ -107,7 +108,6 @@ class SolverWrapper:
     if self.solver_type == "EDMDDL":
       return self.solver.solve(self.train_dataset, self.val_dataset, n_epochs, batch_size, tol, dic_lr)
     elif self.solver_type == "paramkoopman":
-      self.koopman_layer_sizes = self._data['solver']['koopman_layer_sizes']
       koopman_lr = self._data['solver']['koopman_lr']
       network = pkdl.FullConnNet(self.ode.param_dim, self.dim_output**2, self.koopman_layer_sizes)
       PK = pkdl.ParamKoopman(self.dim_output, network)

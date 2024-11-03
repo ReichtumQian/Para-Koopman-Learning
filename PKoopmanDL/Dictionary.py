@@ -78,8 +78,9 @@ class TrainableDictionary(Dictionary):
 class RBFDictionary(Dictionary):
   
   def __init__(self, data_x, nontrain_func, dim_input, dim_output, dim_nontrain, reg):
-    data_x = data_x.detach().numpy()
     dim_train = dim_output - dim_nontrain
+    # set the seed if you want to reproduce the same results
+    np.random.seed(0)
     centers = scipy.cluster.vq.kmeans(data_x, dim_train)[0]
     def func(x):
       rbfs = []

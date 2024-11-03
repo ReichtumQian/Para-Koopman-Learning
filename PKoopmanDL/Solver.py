@@ -28,7 +28,9 @@ class EDMDSolver:
     labels = dataset.labels
     X = self._dictionary(data_x).t()
     Y = self._dictionary(labels).t()
-    K = (Y @ X.t()) @ np.linalg.pinv(X @ X.t())
+    A = Y @ X.t()
+    G = X @ X.t()
+    K = A @ torch.linalg.pinv(G)
     return Koopman(K)
 
 class EDMDDLSolver(EDMDSolver):

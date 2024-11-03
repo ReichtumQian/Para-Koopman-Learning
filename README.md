@@ -1,5 +1,5 @@
 
-Pytorch implementation of EDMDDL [1] and learning parametric Koopman decomposition [2]. Comprehensive documentation and be found [here](https://reichtumqian.github.io/ParamKoopmanDL/), examples can be found in the `example` folder.
+Pytorch implementation of EDMDDL [1] and learning parametric Koopman decomposition [2]. Comprehensive documentation can be found [here](https://reichtumqian.github.io/ParamKoopmanDL/), examples can be found in the `example` folder.
 
 ## Quick Start
 

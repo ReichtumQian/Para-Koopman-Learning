@@ -11,19 +11,14 @@ class ODEDataSet(torch.utils.data.Dataset):
 
   def generate_data(self, n_traj, traj_len, x_min, x_max, param, seed_x=11):
     if isinstance(x_min, numbers.Number):
-      x_min = np.ones((1, self._ode.dim)) * x_min
+      x_min = torch.ones((1, self._ode.dim)) * x_min
     if isinstance(x_max, numbers.Number):
-      x_max = np.ones((1, self._ode.dim)) * x_max
-    if isinstance(x_min, torch.Tensor):
-      x_min = x_min.numpy()
-    if isinstance(x_max, torch.Tensor):
-      x_max = x_max.numpy()
-    x_min = np.broadcast_to(x_min, (n_traj, self._ode.dim))
-    x_max = np.broadcast_to(x_max, (n_traj, self._ode.dim))
-    np.random.seed(seed_x)
-    x0 = np.random.uniform(low=0, high=1, size=(n_traj, self._ode.dim))
+      x_max = torch.ones((1, self._ode.dim)) * x_max
+    x_min = x_min.expand(n_traj, self._ode.dim)
+    x_max = x_max.expand(n_traj, self._ode.dim)
+    torch.manual_seed(seed_x)
+    x0 = torch.rand(n_traj, self._ode.dim)
     x0 = x0 * (x_max - x_min) + x_min
-    x0 = torch.from_numpy(x0).to(dtype=torch.float32).detach()
 
     data_x = [x0]
     for t in range(traj_len - 1):
@@ -71,38 +66,26 @@ class ParamODEDataSet(ODEDataSet):
                     seed_param=22):
     # generate x
     if isinstance(x_min, numbers.Number):
-      x_min = np.ones((1, self._ode.dim)) * x_min
+      x_min = torch.ones((1, self._ode.dim)) * x_min
     if isinstance(x_max, numbers.Number):
-      x_max = np.ones((1, self._ode.dim)) * x_max
-    if isinstance(x_min, torch.Tensor):
-      x_min = x_min.numpy()
-    if isinstance(x_max, torch.Tensor):
-      x_max = x_max.numpy()
-    x_min = np.broadcast_to(x_min, (n_traj, self._ode.dim))
-    x_max = np.broadcast_to(x_max, (n_traj, self._ode.dim))
-    np.random.seed(seed_x)
-    x0 = np.random.uniform(low=0, high=1, size=(n_traj, self._ode.dim))
+      x_max = torch.ones((1, self._ode.dim)) * x_max
+    x_min = x_min.expand(n_traj, self._ode.dim)
+    x_max = x_max.expand(n_traj, self._ode.dim)
+    torch.manual_seed(seed_x)
+    x0 = torch.rand(n_traj, self._ode.dim)
     x0 = x0 * (x_max - x_min) + x_min
-    x0 = torch.from_numpy(x0).to(dtype=torch.float32).detach()
 
     # generate param
     if isinstance(param_min, numbers.Number):
-      param_min = np.ones((1, self._ode.param_dim)) * param_min
+      param_min = torch.ones((1, self._ode.param_dim)) * param_min
     if isinstance(param_max, numbers.Number):
-      param_max = np.ones((1, self._ode.param_dim)) * param_max
-    if isinstance(param_min, torch.Tensor):
-      param_min = param_min.numpy()
-    if isinstance(param_max, torch.Tensor):
-      param_max = param_max.numpy()
-    param_min = np.broadcast_to(param_min, (n_traj, self._ode.param_dim))
-    param_max = np.broadcast_to(param_max, (n_traj, self._ode.param_dim))
-    np.random.seed(seed_param)
-    param = np.random.uniform(low=0,
-                              high=1,
-                              size=(int(n_traj/n_traj_per_param), self._ode.param_dim))
-    param = np.repeat(param, n_traj_per_param, axis=0)
+      param_max = torch.ones((1, self._ode.param_dim)) * param_max
+    param_min = param_min.expand(n_traj, self._ode.param_dim)
+    param_max = param_max.expand(n_traj, self._ode.param_dim)
+    torch.manual_seed(seed_param)
+    param = torch.rand(int(n_traj/n_traj_per_param), self._ode.param_dim)
+    param = param.repeat_interleave(n_traj_per_param, dim=0)
     param = param * (param_max - param_min) + param_min
-    param = torch.from_numpy(param).to(dtype=torch.float32).detach()
 
     data_x = [x0]
     for t in range(traj_len - 1):

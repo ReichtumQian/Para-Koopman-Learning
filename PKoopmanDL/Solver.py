@@ -71,7 +71,7 @@ class EDMDDLSolver(EDMDSolver):
           loss = loss_func(X, Y)
           loss.backward()
           opt.step()
-          total_loss = loss.item() * data.size(0)
+          total_loss += loss.item() * data.size(0)
           num_samples += data.size(0)
       total_loss /= num_samples
       loss_str = f"{total_loss:.2e}"
@@ -85,7 +85,7 @@ class EDMDDLSolver(EDMDSolver):
         for data, labels in dataloader_val:
           X = self._dictionary(data).to(DEVICE) @ K.t()
           Y = self._dictionary(labels).to(DEVICE)
-          val_loss = loss_func(X, Y).item() * data.size(0)
+          val_loss += loss_func(X, Y).item() * data.size(0)
           val_num_samples += data.size(0)
       val_loss /= val_num_samples
       val_loss_str = f"{val_loss:.2e}"

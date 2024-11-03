@@ -72,6 +72,7 @@ extra_css:
   - stylesheets/extra.css
 
 nav:
+  - Home: "index.md"
   - User Guide:
     - Set up the Environment: "UserGuide/SetUp.md"
     - Quick Start: "UserGuide/QuickStart.md"

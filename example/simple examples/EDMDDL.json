@@ -22,7 +22,7 @@
   "solver": {
     "reg": 0.1,
     "reg_final": 0.01,
-    "n_epochs": 300,
+    "n_epochs": 100,
     "batch_size": 1000,
     "tol": 1e-9,
     "dic_lr": 1e-4

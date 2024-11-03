@@ -56,3 +56,103 @@ where $X = [\Psi(x_n^{(0)}), \cdots, \Psi(x_n^{(N-1)})]$,
 $Y = [\Psi(x_{n+1}^{(0)}), \cdots \Psi(x_{n+1}^{(N-1)})]$,
 and $+$ the pseudo inverse.
 
+## Spectral Analysis
+
+**Lemma**. Under appropriate scaling, the left eigenvectors $\xi_j$
+and the corresponding right eigenvector $w_j$ of a matrix $K$ satisfy
+
+$$ \xi_j^{\ast} w_j = 1, \xi_j^{\ast} w_i = 0, \quad \text{for} ~ i \neq j. $$
+
+**Proof**. By the definition of the left eigenvector $\xi_j^{\ast}K = \lambda_j \xi_j^{\ast}$,
+we have
+
+$$ \xi_j^{\ast} K w_i = \xi_j^{\ast} (\lambda_i w_i) = \lambda_i(\xi_j^{\ast}w_i). $$
+
+On the other hand, using the eigenvalue equation for $\xi_j^{\ast}$, we also have
+
+$$ \xi_j^{\ast} K w_i = \lambda_j(\xi_j^{\ast}w_i). $$
+
+By comparing these two expressions, we obtain
+
+$$ \lambda_i(\xi_j^{\ast} w_i) = \lambda_j(\xi_j^{\ast}w_i). $$
+
+If $\lambda_i \neq \lambda_j$, this equation implies that $\xi_j^{\ast}w_i = 0$.
+If $\lambda_i = \lambda_j$, then $\xi_j^{\ast}w_i$ can be any number.
+To satisfy the nomalization condition, we typically choose $\xi_j^{\ast}w_j =1$,
+which completes the proof.
+
+**Corollary**. Given a matrix $K \in \mathbb{R}^{N \times N}$,
+denote $\Xi = [\xi_1,\cdots,\xi_N]$ and $W = [w_1,\cdots,w_M]$,
+where $\xi_i, w_i$ are the left eigenectors and right eigenvectors
+of $K$ with eigenvalue $\mu_i$, respectively.
+Then under appropriate scaling, we have
+
+$$ \Xi^{\ast} = W^{-1}. $$
+
+**Proposition**. Suppose $\xi_j$ is a left eigenvector of matrix $K$ with
+eigenvalue $\mu_j$. Then the function
+
+$$ \varphi_j = \xi_j^\ast \Psi $$
+
+is an eigenfunction of $\mathcal{K}$ with the same eigenvalue $\mu_j$.
+
+**Proof**. Direct calculation yields
+
+$$
+\mathcal{K} \xi_j^{\ast} \Psi
+= \xi_j^{\ast} \mathcal{K} \Psi
+= \xi_j^\ast K \Psi
+= \mu_j \xi_j^{\ast}\Psi.
+$$
+
+**Proposition**. Consider the observable $\mathbf{g}(\mathbf{x})$.
+Assume that for all $g_i(\mathbf{x}) \in L^2(X, m)$,
+there exists $V \in \mathbb{C}^{N_g \times N_{\psi}}$ such that
+
+$$ \mathbf{g}(\mathbf{x}) = V \Phi(\mathbf{x}) $$
+
+where $\Phi(\mathbf{x}) = [\varphi_1(x),\cdots,\varphi_{N_{\psi}}(x)]^T$.
+
+**Proof**. Since all $g_i(\mathbf{x}) \in L^2(X, m)$,
+we have $g_i(\mathbf{x}) = \sum\limits_{k = 1}^{N_{\psi}}
+\psi_k(\mathbf{x})b_{k,i} = \mathbf{b}_i^T \Psi(\mathbf{x})$,
+which yields
+
+$$ \mathbf{g}(\mathbf{x}) = \left[
+  \begin{array}{cccc}
+    \mathbf{b}_1^T \Psi(x)&\mathbf{b}_2^T \Psi(x)&\cdots&\mathbf{b}_{N_{\psi}}^T \Psi(x)
+  \end{array}
+\right] = B \Psi(x). $$
+
+Next we express $\psi_i$ in terms of $\varphi_i$, we have
+
+$$
+\Phi(x) = \left[
+  \begin{array}{c}
+    \xi_1^{\ast}\\
+    \xi_2^{\ast}\\
+    \vdots\\
+    \xi_{N_{\psi}}^{\ast}
+  \end{array}
+\right] = \Xi^{\ast} \Psi(x).
+$$
+
+By the relation between left and right eigenvectors, we have $(\Xi^{\ast})^{-1} = W$.
+Combining above equations yields
+
+$$ \mathbf{g}(\mathbf{x}) = V \Phi(\mathbf{x}) = B W \Phi(\mathbf{x}). $$
+
+!!! note
+    Since the first $N_y$ functions of $\Psi$ are the observables $\mathbf{g}$,
+    here we have
+
+    $$ B =
+    \left[
+    \begin{array}{cc}
+      I_{N_y}& O_{N_y \times (N_{\psi} - N_y)}
+    \end{array}
+    \right]_{N_y \times N_{\psi}}.
+    $$
+
+
+

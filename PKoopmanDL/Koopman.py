@@ -14,6 +14,7 @@ class Koopman:
     func = lambda x: (K @ x.t()).t()
     self._K = K
     self._func = func
+    self._compute_eig()
   
   def __call__(self, x):
     """Apply the Koopman operator on the input `x`.
@@ -26,14 +27,25 @@ class Koopman:
     """
     return self._func(x)
   
-  def predict(self, x0, dictionary, dim_nontrain, traj_len):
+  def predict(self, x0, dictionary, state_pos, dim_nontrain, traj_len):
     y = []
+    x = x0
     psi = dictionary(x0)
     y.append(psi[:, :dim_nontrain])
     for _ in range(traj_len - 1):
       psi = self(psi)
       y.append(psi[:, :dim_nontrain])
+      x = psi[:, state_pos]
+      psi = dictionary(x)
     return torch.stack(y, dim = 0).permute(1, 0, 2) # size: (N, traj_len, dim_nontrain)
+  
+  def _compute_eig(self):
+    eigenvalues, eigenvectors = np.linalg.eig(self._K.detach().numpy())
+    idx = eigenvalues.real.argsort()[::-1]
+    self.eigenvalues = torch.from_numpy(eigenvalues[idx])
+    self.right_eigenvectors = torch.from_numpy(eigenvectors[:, idx])
+    self.left_eigenvectors = torch.from_numpy(np.linalg.inv(self.right_eigenvectors))
+    self.left_eigenvectors = torch.conj(self.left_eigenvectors.t())
   
   def save(self, path):
     torch.save(self._K, path)
@@ -71,14 +83,16 @@ class ParamKoopman:
   def parameters(self):
     return self._network.parameters()
 
-  def predict(self, para, x0, dictionary, dim_nontrain, traj_len):
+  def predict(self, para, x0, dictionary, state_pos, dim_nontrain, traj_len):
     y = []
     psi = dictionary(x0)
     y.append(psi[:, :dim_nontrain])
     for _ in range(traj_len - 1):
       psi = self(para, psi)
       y.append(psi[:, :dim_nontrain])
-    return torch.stack(y, dim = 0).permute(1, 0, 2) # size: (N, traj_len, dim_nontrain)
+      x = psi[:, state_pos]
+      psi = dictionary(x)
+    return torch.stack(y, dim = 1) # size: (N, traj_len, dim_nontrain)
   
   def train(self):
     self._network.train()

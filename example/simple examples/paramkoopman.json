@@ -8,7 +8,7 @@
   "dataset": {
     "n_traj": 10000,
     "n_traj_per_param": 100,
-    "traj_len": 50,
+    "traj_len": 20,
     "x_min": -2,
     "x_max": 2,
     "param_min": [0.0, -2.0, 0.0],
@@ -23,7 +23,7 @@
     "dic_layer_sizes": [100, 100, 100]
   },
   "solver": {
-    "n_epochs": 100,
+    "n_epochs": 20,
     "batch_size": 1000,
     "tol": 1e-9,
     "dic_lr": 1e-4,

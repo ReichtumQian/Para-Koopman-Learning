@@ -1,9 +1,10 @@
-
 from .Koopman import *
 from .Device import DEVICE
+from .Log import *
 from tqdm import tqdm
 import numpy as np
 import torch
+
 
 class EDMDSolver:
 
@@ -24,6 +25,7 @@ class EDMDSolver:
     Returns:
         Koopman: The Koopman operator as a linear mapping function.
     """
+    info("[EDMDSolver] Solving...")
     data_x = dataset.data_x
     labels = dataset.labels
     X = self._dictionary(data_x).t()
@@ -33,9 +35,10 @@ class EDMDSolver:
     K = A @ torch.linalg.pinv(G)
     return Koopman(K)
 
+
 class EDMDDLSolver(EDMDSolver):
 
-  def __init__(self, dictionary, reg, reg_final = 0.01):
+  def __init__(self, dictionary, reg, reg_final=0.01):
     """ Initialize the EDMDDLSolver instance.
     
     Args:
@@ -46,22 +49,37 @@ class EDMDDLSolver(EDMDSolver):
     self._reg = reg
     self._reg_final = reg_final
 
-  def solve(self, dataset_train, dataset_val, n_epochs, batch_size, tol = 1e-8, lr = 1e-4):
+  def solve(self,
+            dataset_train,
+            dataset_val,
+            n_epochs,
+            batch_size,
+            tol=1e-8,
+            lr=1e-4):
+
     def compute_K(data_x, labels, reg):
       X = self._dictionary(data_x).t()
       Y = self._dictionary(labels).t()
-      regularizer = torch.eye(self._dictionary.dim_output) * reg 
+      regularizer = torch.eye(self._dictionary.dim_output) * reg
       K = (Y @ X.t()) @ torch.linalg.pinv(X @ X.t() + regularizer)
       return K.detach()
-    dataloader_train = torch.utils.data.DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
-    dataloader_val = torch.utils.data.DataLoader(dataset_val, batch_size=batch_size, shuffle=False)
+
+    info("[EDMDDLSolver] Solving...")
+
+    dataloader_train = torch.utils.data.DataLoader(dataset_train,
+                                                   batch_size=batch_size,
+                                                   shuffle=True)
+    dataloader_val = torch.utils.data.DataLoader(dataset_val,
+                                                 batch_size=batch_size,
+                                                 shuffle=False)
     loss_func = torch.nn.MSELoss()
-    opt = torch.optim.Adam(self._dictionary.parameters(), lr = lr)
+    opt = torch.optim.Adam(self._dictionary.parameters(), lr=lr)
     pbar = tqdm(range(n_epochs), desc="Training")
     for _ in pbar:
       # Training
       self._dictionary.train()
-      K = compute_K(dataset_train.dataset.data_x, dataset_train.dataset.labels, self._reg)
+      K = compute_K(dataset_train.dataset.data_x, dataset_train.dataset.labels,
+                    self._reg)
       K = K.to(DEVICE)
       total_loss = 0
       num_samples = 0
@@ -79,7 +97,8 @@ class EDMDDLSolver(EDMDSolver):
       loss_str = f"{total_loss:.2e}"
       # Validation
       self._dictionary.eval()
-      K = compute_K(dataset_val.dataset.data_x, dataset_val.dataset.labels, self._reg)
+      K = compute_K(dataset_val.dataset.data_x, dataset_val.dataset.labels,
+                    self._reg)
       K = K.to(DEVICE)
       val_loss = 0
       val_num_samples = 0
@@ -94,20 +113,35 @@ class EDMDDLSolver(EDMDSolver):
       pbar.set_postfix(train_loss=loss_str, val_loss=val_loss_str)
       if total_loss < tol:
         break
-    K = compute_K(dataset_train.dataset.data_x, dataset_train.dataset.labels, self._reg_final)
+    K = compute_K(dataset_train.dataset.data_x, dataset_train.dataset.labels,
+                  self._reg_final)
     return Koopman(K)
 
-          
+
 class ParamKoopmanDLSolver:
+
   def __init__(self, dictionary):
     self._dictionary = dictionary
-  
-  def solve(self, dataset_train, dataset_val, paramkoopman, n_epochs, batch_size, tol = 1e-6, lr_dic = 1e-4, lr_koop = 1e-4):
-    dataloader_train = torch.utils.data.DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
-    dataloader_val = torch.utils.data.DataLoader(dataset_val, batch_size=batch_size, shuffle=False)
+
+  def solve(self,
+            dataset_train,
+            dataset_val,
+            paramkoopman,
+            n_epochs,
+            batch_size,
+            tol=1e-6,
+            lr_dic=1e-4,
+            lr_koop=1e-4):
+    info("[ParamKoopmanDLSolver] Solving...")
+    dataloader_train = torch.utils.data.DataLoader(dataset_train,
+                                                   batch_size=batch_size,
+                                                   shuffle=True)
+    dataloader_val = torch.utils.data.DataLoader(dataset_val,
+                                                 batch_size=batch_size,
+                                                 shuffle=False)
     loss_func = torch.nn.MSELoss()
-    opt_dictionary = torch.optim.Adam(self._dictionary.parameters(), lr = lr_dic)
-    opt_koopman = torch.optim.Adam(paramkoopman.parameters(), lr = lr_koop)
+    opt_dictionary = torch.optim.Adam(self._dictionary.parameters(), lr=lr_dic)
+    opt_koopman = torch.optim.Adam(paramkoopman.parameters(), lr=lr_koop)
     pbar = tqdm(range(n_epochs), desc="Training")
     for _ in pbar:
       # Training
@@ -145,11 +179,3 @@ class ParamKoopmanDLSolver:
       if total_loss < tol:
         break
     return paramkoopman
-
-    
-    
-    
-    
-    
-    
-    

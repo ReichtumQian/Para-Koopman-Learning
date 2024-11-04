@@ -1,5 +1,7 @@
 tmp_test/
+.vscode/
 *.el
+*.pt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

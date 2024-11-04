@@ -1,4 +1,3 @@
-
 import torch
 
 from .Dictionary import *
@@ -9,7 +8,6 @@ from .ODE import *
 from .ODEDataSet import *
 from .Solver import *
 from .SolverWrapper import *
-
 
 if torch.cuda.is_available():
   print("CUDA is available. GPU is being used.")

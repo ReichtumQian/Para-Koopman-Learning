@@ -197,11 +197,11 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
 
   def _init_solver(self):
     self.solver = ParamKoopmanDLSolver(self.dictionary)
-
-  def solve(self):
     network = FullConnNet(self.ode.param_dim, self.dim_output**2,
                           self.koopman_layer_sizes)
-    PK = ParamKoopman(self.dim_output, network)
-    return self.solver.solve(self.train_dataset, self.val_dataset, PK,
+    self.K = ParamKoopman(self.dim_output, network)
+
+  def solve(self):
+    return self.solver.solve(self.train_dataset, self.val_dataset, self.K,
                              self.n_epochs, self.batch_size, self.tol,
                              self.dic_lr, self.koopman_lr)

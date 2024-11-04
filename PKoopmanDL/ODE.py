@@ -1,5 +1,6 @@
 
 import torch
+from .Factory import *
 
 class AbstractODE:
 
@@ -81,4 +82,7 @@ class VanDerPolOscillator(AbstractODE):
     super().__init__(dim, param_dim, rhs)
 
 
-
+# Factory
+ODEFACTORY = Factory()
+ODEFACTORY.register("Duffing", DuffingOscillator)
+ODEFACTORY.register("vdp", VanDerPolOscillator)

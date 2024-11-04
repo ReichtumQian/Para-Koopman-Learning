@@ -107,3 +107,10 @@ nav:
       - Class FullConnBaseNet: "ClassReferences/FullConnBaseNet.md"
       - Class FullConnNet: "ClassReferences/FullConnNet.md"
       - Class FullConnResNet: "ClassReferences/FullConnResNet.md"
+    - SolverWrapper:
+      - Class SolverWrapper: "ClassReferences/SolverWrapper.md"
+      - Class EDMDRBFSolverWrapper: "ClassReferences/EDMDRBFSolverWrapper.md"
+      - Class EDMDDLSolverWrapper: "ClassReferences/EDMDDLSolverWrapper.md"
+      - Class ParamKoopmanDLSolverWrapper: "ClassReferences/ParamKoopmanDLSolverWrapper.md"
+    - Factory:
+      - Class Factory: "ClassReferences/Factory.md"

@@ -1,7 +1,7 @@
 {
-  "solver_type": "EDMD-RBF",
   "equ_type": "Duffing",
   "flowmap": {
+    "type": "forward euler",
     "dt": 1e-3,
     "t_step": 0.25
   },

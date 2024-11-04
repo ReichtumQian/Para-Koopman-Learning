@@ -2,6 +2,7 @@
 import numpy as np
 import torch
 from scipy.optimize import fsolve
+from .Factory import *
 
 
 class FlowMap:
@@ -90,3 +91,9 @@ class RungeKutta4(FlowMap):
       k4 = self._dt * ode.rhs(x + k3, u)
       x = x + (k1 + 2 * k2 + 2 * k3 + k4) / 6
     return x
+
+# Factory
+FLOWMAPFACTORY= Factory()
+FLOWMAPFACTORY.register("forward euler", ForwardEuler)
+FLOWMAPFACTORY.register("backward euler", BackwardEuler)
+FLOWMAPFACTORY.register("rk4", RungeKutta4)

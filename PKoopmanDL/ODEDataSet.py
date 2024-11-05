@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import numbers
 
+
 class ODEDataSet(torch.utils.data.Dataset):
 
   def __init__(self, ode, flowmap):
@@ -83,7 +84,7 @@ class ParamODEDataSet(ODEDataSet):
     param_min = param_min.expand(n_traj, self._ode.param_dim)
     param_max = param_max.expand(n_traj, self._ode.param_dim)
     torch.manual_seed(seed_param)
-    param = torch.rand(int(n_traj/n_traj_per_param), self._ode.param_dim)
+    param = torch.rand(int(n_traj / n_traj_per_param), self._ode.param_dim)
     param = param.repeat_interleave(n_traj_per_param, dim=0)
     param = param * (param_max - param_min) + param_min
 

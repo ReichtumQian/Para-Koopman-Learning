@@ -1,9 +1,13 @@
-
 import torch
+
 
 class FullConnBaseNet(torch.nn.Module):
 
-  def __init__(self, input_dim=1, output_dim=1, layer_size=[64, 64], activation='tanh'):
+  def __init__(self,
+               input_dim=1,
+               output_dim=1,
+               layer_size=[64, 64],
+               activation='tanh'):
     """ Initialize the FullConnResNet instance.
 
     Args:
@@ -14,7 +18,7 @@ class FullConnBaseNet(torch.nn.Module):
     """
     super().__init__()
     # input layer
-    self._input_layer = torch.nn.Linear(input_dim, layer_size[0], bias = False)
+    self._input_layer = torch.nn.Linear(input_dim, layer_size[0], bias=False)
     # hidden layers
     self._hidden_layers = torch.nn.ModuleList()
     for in_features, out_features in zip(layer_size[:-1], layer_size[1:]):
@@ -22,7 +26,7 @@ class FullConnBaseNet(torch.nn.Module):
     # output layer
     self._output_layer = torch.nn.Linear(layer_size[-1], output_dim)
     self._activation_type = activation
-  
+
   def _apply_activation(self, x):
     if self._activation_type == 'tanh':
       return torch.tanh(x)
@@ -30,7 +34,7 @@ class FullConnBaseNet(torch.nn.Module):
       return torch.relu(x)
     else:
       raise NotImplementedError
-    
+
   def forward(self, inputs):
     """Apply the network to the input `inputs`
 
@@ -43,7 +47,6 @@ class FullConnBaseNet(torch.nn.Module):
     raise NotImplementedError
 
 
-
 class FullConnResNet(FullConnBaseNet):
 
   def forward(self, inputs):
@@ -54,6 +57,7 @@ class FullConnResNet(FullConnBaseNet):
       hidden_u = hidden_u + residual
     return self._output_layer(hidden_u)
 
+
 class FullConnNet(FullConnBaseNet):
 
   def forward(self, inputs):
@@ -61,4 +65,3 @@ class FullConnNet(FullConnBaseNet):
     for layer in self._hidden_layers:
       hidden_u = self._apply_activation(layer(hidden_u))
     return self._output_layer(hidden_u)
-

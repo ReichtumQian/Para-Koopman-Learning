@@ -1,4 +1,3 @@
-
 import numpy as np
 import torch
 from scipy.optimize import fsolve
@@ -6,8 +5,8 @@ from .Factory import *
 
 
 class FlowMap:
-  
-  def __init__(self, t_step, dt = 1e-3):
+
+  def __init__(self, t_step, dt=1e-3):
     """Initialize the FlowMap instance.
 
     Args:
@@ -22,10 +21,10 @@ class FlowMap:
       x.append(self.step(ode, x[-1], u))
     x = torch.cat(x, dim=0)
     return x
-      
 
   def step(self, ode, x, u):
     return NotImplementedError
+
 
 class ForwardEuler(FlowMap):
 
@@ -45,6 +44,7 @@ class ForwardEuler(FlowMap):
       x = x + self._dt * ode.rhs(x, u)
     return x
 
+
 class BackwardEuler(FlowMap):
 
   def step(self, ode, x, u):
@@ -63,15 +63,20 @@ class BackwardEuler(FlowMap):
     N = x_numpy.shape[0]
     d = x_numpy.shape[1]
     for _ in range(n_step):
+
       def equ(x_next):
         x_next = np.reshape(x_next, (N, d))
-        result = x_next - x_numpy - self._dt * ode.rhs(torch.from_numpy(x_next), u).numpy()
+        result = x_next - x_numpy - self._dt * ode.rhs(torch.from_numpy(x_next),
+                                                       u).numpy()
         return result.flatten()
+
       x_numpy = fsolve(equ, x_numpy)
       x_numpy = np.reshape(x_numpy, (N, d))
     return torch.from_numpy(x_numpy).to(torch.float32)
 
+
 class RungeKutta4(FlowMap):
+
   def step(self, ode, x, u):
     """Apply one step of the 4th-order Runge-Kutta method.
 
@@ -92,8 +97,9 @@ class RungeKutta4(FlowMap):
       x = x + (k1 + 2 * k2 + 2 * k3 + k4) / 6
     return x
 
+
 # Factory
-FLOWMAPFACTORY= Factory()
+FLOWMAPFACTORY = Factory()
 FLOWMAPFACTORY.register("forward euler", ForwardEuler)
 FLOWMAPFACTORY.register("backward euler", BackwardEuler)
 FLOWMAPFACTORY.register("rk4", RungeKutta4)

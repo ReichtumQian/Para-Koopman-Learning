@@ -18,12 +18,12 @@
     "train_ratio": 0.8
   },
   "dictionary": {
-    "dim_output": 31,
+    "dim_output": 51,
     "dim_nontrain": 21,
     "dic_layer_sizes": [100, 100, 100]
   },
   "solver": {
-    "n_epochs": 50,
+    "n_epochs": 30,
     "batch_size": 1000,
     "tol": 1e-9,
     "dic_lr": 1e-4,

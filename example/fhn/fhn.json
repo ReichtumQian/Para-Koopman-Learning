@@ -1,0 +1,33 @@
+{
+  "equ_type": "fhn",
+  "flowmap": {
+    "type": "forward euler",
+    "dt": 1e-5,
+    "t_step": 1e-3
+  },
+  "dataset": {
+    "n_traj": 10000,
+    "n_traj_per_param": 100,
+    "traj_len": 50,
+    "x_min": 0,
+    "x_max": 1,
+    "param_min": [-1.0],
+    "param_max": [1.0],
+    "seed_x": 11,
+    "seed_param": 22,
+    "train_ratio": 0.8
+  },
+  "dictionary": {
+    "dim_output": 31,
+    "dim_nontrain": 21,
+    "dic_layer_sizes": [100, 100, 100]
+  },
+  "solver": {
+    "n_epochs": 50,
+    "batch_size": 1000,
+    "tol": 1e-9,
+    "dic_lr": 1e-4,
+    "koopman_layer_sizes": [256, 256],
+    "koopman_lr": 1e-4
+  }
+}

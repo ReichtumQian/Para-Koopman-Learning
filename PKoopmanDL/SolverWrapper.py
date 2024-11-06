@@ -21,10 +21,13 @@ class SolverWrapper:
     self._read_dictionary_config()
     self._read_solver_config()
 
-  def setup(self, nontrain_func):
+  def setup(self,
+            nontrain_func,
+            x_sample_func=torch.rand,
+            param_sample_func=torch.rand):
     self._init_ode()
     self._init_flowmap()
-    self._init_dataset()
+    self._init_dataset(x_sample_func, param_sample_func)
     self._init_dictionary(nontrain_func)
     self._init_solver()
 
@@ -78,7 +81,7 @@ class SolverWrapper:
     self.flowmap = FLOWMAPFACTORY.create(self.flowmap_type, self.t_step,
                                          self.dt)
 
-  def _init_dataset(self):
+  def _init_dataset(self, x_sample_func, param_sample_func):
     return NotImplementedError
 
   def _init_dictionary(self, nontrain_func):
@@ -94,8 +97,8 @@ class EDMDRBFSolverWrapper(SolverWrapper):
     super()._read_dictionary_config()
     self.reg = self._data['dictionary']['reg']
 
-  def _init_dataset(self):
-    self.dataset = ODEDataSet(self.ode, self.flowmap)
+  def _init_dataset(self, x_sample_func, param_sample_func):
+    self.dataset = ODEDataSet(self.ode, self.flowmap, x_sample_func)
     self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min,
                                self.x_max, self.param, self.seed_x)
 
@@ -130,8 +133,8 @@ class EDMDDLSolverWrapper(SolverWrapper):
     self.tol = self._data['solver']['tol']
     self.dic_lr = self._data['solver']['dic_lr']
 
-  def _init_dataset(self):
-    self.dataset = ODEDataSet(self.ode, self.flowmap)
+  def _init_dataset(self, x_sample_func, param_sample_func):
+    self.dataset = ODEDataSet(self.ode, self.flowmap, x_sample_func)
     self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min,
                                self.x_max, self.param, self.seed_x)
     self.train_dataset, self.val_dataset = torch.utils.data.random_split(
@@ -177,8 +180,9 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
     self.koopman_layer_sizes = self._data['solver']['koopman_layer_sizes']
     self.koopman_lr = self._data['solver']['koopman_lr']
 
-  def _init_dataset(self):
-    self.dataset = ParamODEDataSet(self.ode, self.flowmap)
+  def _init_dataset(self, x_sample_func, param_sample_func):
+    self.dataset = ParamODEDataSet(self.ode, self.flowmap, x_sample_func,
+                                   param_sample_func)
     self.dataset.generate_data(self.n_traj, self.n_traj_per_param,
                                self.traj_len, self.x_min, self.x_max,
                                self.param_min, self.param_max, self.seed_x,

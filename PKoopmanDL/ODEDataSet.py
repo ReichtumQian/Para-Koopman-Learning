@@ -5,10 +5,11 @@ import numbers
 
 class ODEDataSet(torch.utils.data.Dataset):
 
-  def __init__(self, ode, flowmap):
+  def __init__(self, ode, flowmap, x_sample_func=torch.rand):
     self._ode = ode
     self._flowmap = flowmap
     self._generated = False
+    self._x_sample_func = x_sample_func
 
   def generate_data(self, n_traj, traj_len, x_min, x_max, param, seed_x=11):
     if isinstance(x_min, numbers.Number):
@@ -18,7 +19,7 @@ class ODEDataSet(torch.utils.data.Dataset):
     x_min = x_min.expand(n_traj, self._ode.dim)
     x_max = x_max.expand(n_traj, self._ode.dim)
     torch.manual_seed(seed_x)
-    x0 = torch.rand(n_traj, self._ode.dim)
+    x0 = self._x_sample_func(n_traj, self._ode.dim)
     x0 = x0 * (x_max - x_min) + x_min
 
     data_x = [x0]
@@ -55,6 +56,14 @@ class ODEDataSet(torch.utils.data.Dataset):
 
 class ParamODEDataSet(ODEDataSet):
 
+  def __init__(self,
+               ode,
+               flowmap,
+               x_sample_func=torch.rand,
+               param_sample_func=torch.rand):
+    super().__init__(ode, flowmap, x_sample_func)
+    self._param_sample_func = param_sample_func
+
   def generate_data(self,
                     n_traj,
                     n_traj_per_param,
@@ -73,7 +82,7 @@ class ParamODEDataSet(ODEDataSet):
     x_min = x_min.expand(n_traj, self._ode.dim)
     x_max = x_max.expand(n_traj, self._ode.dim)
     torch.manual_seed(seed_x)
-    x0 = torch.rand(n_traj, self._ode.dim)
+    x0 = self._x_sample_func(n_traj, self._ode.dim)
     x0 = x0 * (x_max - x_min) + x_min
 
     # generate param
@@ -84,7 +93,8 @@ class ParamODEDataSet(ODEDataSet):
     param_min = param_min.expand(n_traj, self._ode.param_dim)
     param_max = param_max.expand(n_traj, self._ode.param_dim)
     torch.manual_seed(seed_param)
-    param = torch.rand(int(n_traj / n_traj_per_param), self._ode.param_dim)
+    param = self._param_sample_func(int(n_traj / n_traj_per_param),
+                                    self._ode.param_dim)
     param = param.repeat_interleave(n_traj_per_param, dim=0)
     param = param * (param_max - param_min) + param_min
 

@@ -1,0 +1,33 @@
+{
+  "equ_type": "vdpm",
+  "flowmap": {
+    "type": "forward euler",
+    "dt": 1e-3,
+    "t_step": 1e-2
+  },
+  "dataset": {
+    "n_traj": 1000,
+    "n_traj_per_param": 10,
+    "traj_len": 100,
+    "x_min": -1,
+    "x_max": 1,
+    "param_min": [0.0, -1.0],
+    "param_max": [0.0, 1.0],
+    "seed_x": 11,
+    "seed_param": 22,
+    "train_ratio": 1.0
+  },
+  "dictionary": {
+    "dim_output": 13,
+    "dim_nontrain": 3,
+    "dic_layer_sizes": [100, 100, 100]
+  },
+  "solver": {
+    "n_epochs": 100,
+    "batch_size": 1000,
+    "tol": 1e-9,
+    "dic_lr": 1e-4,
+    "koopman_layer_sizes": [256, 256],
+    "koopman_lr": 1e-4
+  }
+}

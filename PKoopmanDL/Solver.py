@@ -4,6 +4,7 @@ from .Log import *
 from tqdm import tqdm
 import numpy as np
 import torch
+import math
 
 
 class EDMDSolver:
@@ -25,7 +26,7 @@ class EDMDSolver:
     Returns:
         Koopman: The Koopman operator as a linear mapping function.
     """
-    info("[EDMDSolver] Solving...")
+    info_message("[EDMDSolver] Solving...")
     data_x = dataset.data_x
     labels = dataset.labels
     X = self._dictionary(data_x).t()
@@ -64,7 +65,7 @@ class EDMDDLSolver(EDMDSolver):
       K = (Y @ X.t()) @ torch.linalg.pinv(X @ X.t() + regularizer)
       return K.detach()
 
-    info("[EDMDDLSolver] Solving...")
+    info_message("[EDMDDLSolver] Solving...")
 
     dataloader_train = torch.utils.data.DataLoader(dataset_train,
                                                    batch_size=batch_size,
@@ -94,6 +95,7 @@ class EDMDDLSolver(EDMDSolver):
           total_loss += loss.item() * data.size(0)
           num_samples += data.size(0)
       total_loss /= num_samples
+      total_loss = math.sqrt(total_loss)
       loss_str = f"{total_loss:.2e}"
       # Validation
       self._dictionary.eval()
@@ -109,6 +111,7 @@ class EDMDDLSolver(EDMDSolver):
           val_loss += loss_func(X, Y).item() * data.size(0)
           val_num_samples += data.size(0)
       val_loss /= val_num_samples
+      val_loss = math.sqrt(val_loss)
       val_loss_str = f"{val_loss:.2e}"
       pbar.set_postfix(train_loss=loss_str, val_loss=val_loss_str)
       if total_loss < tol:
@@ -132,7 +135,7 @@ class ParamKoopmanDLSolver:
             tol=1e-6,
             lr_dic=1e-4,
             lr_koop=1e-4):
-    info("[ParamKoopmanDLSolver] Solving...")
+    info_message("[ParamKoopmanDLSolver] Solving...")
     dataloader_train = torch.utils.data.DataLoader(dataset_train,
                                                    batch_size=batch_size,
                                                    shuffle=True)
@@ -154,16 +157,23 @@ class ParamKoopmanDLSolver:
         X = self._dictionary(data_x)
         X = paramkoopman(data_param, X).to(DEVICE)
         Y = self._dictionary(labels).to(DEVICE)
+        if debug_level():
+          error = torch.max(torch.abs(X - Y))
+          debug_message(f"Train Max Error: {error:.2e}")
         loss = loss_func(X, Y)
         loss.backward()
         opt_dictionary.step()
         opt_koopman.step()
         total_loss += loss.item() * data_x.size(0)
       total_loss = total_loss / len(dataset_train)
+      total_loss = math.sqrt(total_loss)
       loss_str = f"{total_loss:.2e}"
       # Validation
       self._dictionary.eval()
       paramkoopman.eval()
+      if len(dataloader_val) == 0:
+        pbar.set_postfix(train_loss=loss_str)
+        continue
       val_loss = 0
       val_num_samples = 0
       with torch.no_grad():
@@ -174,6 +184,7 @@ class ParamKoopmanDLSolver:
           val_loss += loss_func(X, Y).item() * data_x.size(0)
           val_num_samples += data_x.size(0)
       val_loss /= val_num_samples
+      val_loss = math.sqrt(val_loss)
       val_loss_str = f"{val_loss:.2e}"
       pbar.set_postfix(train_loss=loss_str, val_loss=val_loss_str)
       if total_loss < tol:

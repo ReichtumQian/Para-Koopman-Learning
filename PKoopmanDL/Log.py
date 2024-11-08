@@ -9,17 +9,22 @@ handler.setFormatter(formatter)
 LOGGER.addHandler(handler)
 
 
-def debug(message):
+def set_level(level):
+  LOGGER.setLevel(level)
+
+
+def check_level(level):
+  # if effective level is less than or equal to level, return True
+  return LOGGER.getEffectiveLevel() <= level
+
+
+def debug_level():
+  return check_level(logging.DEBUG)
+
+
+def debug_message(message):
   LOGGER.debug(message)
 
 
-def info(message):
+def info_message(message):
   LOGGER.info(message)
-
-
-def warning(message):
-  LOGGER.warning(message)
-
-
-def error(message):
-  LOGGER.error(message)

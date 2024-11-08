@@ -67,7 +67,7 @@ class ParamKoopman:
     self._size = size_K
     self._network = network
 
-  def __call__(self, para, x):
+  def __call__(self, param, x):
     """Generate a Koopman operator based on the given parameters.
 
     Args:
@@ -76,7 +76,11 @@ class ParamKoopman:
     Returns:
         Koopman: The Koopman operator corresponding to the given parameters.
     """
-    net_out = self._network(para)
+    if param.size(0) == 1:
+      net_param = param.expand(x.size(0), -1)
+    else:
+      net_param = param
+    net_out = self._network(net_param)
     K = net_out.reshape(net_out.size(0), self._size, self._size)
     x = x.unsqueeze(2)
     result = torch.bmm(K, x).squeeze(2)

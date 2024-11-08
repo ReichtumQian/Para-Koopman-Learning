@@ -63,20 +63,27 @@ class DuffingOscillator(AbstractODE):
     super().__init__(dim, param_dim, rhs)
 
 
-class VanderPolOscillator(AbstractODE):
+class VanderPolMathieu(AbstractODE):
 
   def __init__(self):
     dim = 2
-    param_dim = 1
+    param_dim = 2
+    k1 = 2
+    k2 = 2
+    k3 = 1
+    w0 = 1
 
     def rhs(x, u):
-      # u = (alpha)
+      # u = (mu, u)
       param = u
       data_size = x.size(0)
       if u.size(0) == 1:
         param = u.expand(data_size, param_dim)
-      result = torch.stack(
-          (x[:, 1], param[:, 0] * (1 - x[:, 0]**2) * x[:, 1] - x[:, 0]), dim=1)
+      y1 = x[:, 1]
+      y2 = (k1 - k2 * x[:, 0]**2) * x[:, 1] - (
+          w0**2 + 2 * param[:, 0] * param[:, 1]**2 -
+          param[:, 0]) * x[:, 0] + k3 * param[:, 1]
+      result = torch.stack((y1, y2), dim=1)
       if torch.isnan(result).any() or torch.isinf(result).any():
         print(torch.nonzero(torch.isnan(result)))
         print(torch.nonzero(torch.isinf(result)))
@@ -143,5 +150,5 @@ class FitzHughNagumo(AbstractODE):
 # Factory
 ODEFACTORY = Factory()
 ODEFACTORY.register("Duffing", DuffingOscillator)
-ODEFACTORY.register("vdp", VanderPolOscillator)
+ODEFACTORY.register("vdpm", VanderPolMathieu)
 ODEFACTORY.register("fhn", FitzHughNagumo)

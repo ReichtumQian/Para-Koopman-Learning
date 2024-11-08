@@ -1,0 +1,22 @@
+{
+  "equ_type": "vdpm",
+  "flowmap": {
+    "type": "forward euler",
+    "dt": 1e-3,
+    "t_step": 1e-2
+  },
+  "dataset": {
+    "n_traj": 1000,
+    "traj_len": 100,
+    "x_min": -1,
+    "x_max": 1,
+    "param": [0.0, 0.5],
+    "seed_x": 0
+  },
+  "dictionary": {
+    "dim_output": 100,
+    "dim_nontrain": 3,
+    "reg": 1e-4
+  },
+  "solver": {}
+}

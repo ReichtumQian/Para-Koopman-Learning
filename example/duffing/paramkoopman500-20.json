@@ -23,7 +23,7 @@
     "dic_layer_sizes": [100, 100, 100]
   },
   "solver": {
-    "n_epochs": 10,
+    "n_epochs": 100,
     "batch_size": 1000,
     "tol": 1e-9,
     "dic_lr": 1e-4,

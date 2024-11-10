@@ -1,0 +1,34 @@
+{
+  "equ_type": "fdv",
+  "flowmap": {
+    "type": "rk4",
+    "dt": 1e-4,
+    "t_step": 1e-2
+  },
+  "dataset": {
+    "n_traj": 1000,
+    "n_traj_per_param": 1,
+    "traj_len": 100,
+    "x_min": 0,
+    "x_max": 1,
+    "param_min": 0.0,
+    "param_max": 1.0,
+    "seed_x": 11,
+    "seed_param": 22,
+    "train_ratio": 0.8,
+    "param_time_dependent": true
+  },
+  "dictionary": {
+    "dim_output": 6,
+    "dim_nontrain": 3,
+    "dic_layer_sizes": [100, 100, 100]
+  },
+  "solver": {
+    "n_epochs": 20,
+    "batch_size": 1000,
+    "tol": 1e-9,
+    "dic_lr": 1e-4,
+    "koopman_layer_sizes": [256, 256],
+    "koopman_lr": 1e-4
+  }
+}

@@ -96,10 +96,10 @@ class VanderPolMathieu(AbstractODE):
 class FitzHughNagumo(AbstractODE):
 
   def __init__(self):
-    Nx = 10
+    Nx = 10  # in total Nx - 1 intervals
     x_max = 10
     x_min = -10
-    x_step = (x_max - x_min) / Nx
+    x_step = (x_max - x_min) / (Nx - 1)
     x_grid = torch.linspace(x_min, x_max, Nx).unsqueeze(0)
 
     # A PDE is equivalent to (Nx * number of dependent variables) ODEs

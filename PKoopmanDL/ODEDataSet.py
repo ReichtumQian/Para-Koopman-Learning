@@ -73,7 +73,8 @@ class ParamODEDataSet(ODEDataSet):
                     param_min,
                     param_max,
                     seed_x=11,
-                    seed_param=22):
+                    seed_param=22,
+                    param_time_dependent=False):
     # generate x
     if isinstance(x_min, numbers.Number):
       x_min = torch.ones((1, self._ode.dim)) * x_min
@@ -93,21 +94,28 @@ class ParamODEDataSet(ODEDataSet):
     param_min = param_min.expand(n_traj, self._ode.param_dim)
     param_max = param_max.expand(n_traj, self._ode.param_dim)
     torch.manual_seed(seed_param)
-    param = self._param_sample_func(int(n_traj / n_traj_per_param),
-                                    self._ode.param_dim)
-    param = param.repeat_interleave(n_traj_per_param, dim=0)
-    param = param * (param_max - param_min) + param_min
+
+    def generate_param():
+      param = self._param_sample_func(int(n_traj / n_traj_per_param),
+                                      self._ode.param_dim)
+      param = param.repeat_interleave(n_traj_per_param, dim=0)
+      param = param * (param_max - param_min) + param_min
+      return param
 
     data_x = [x0]
+    param = generate_param()
+    data_param = [param]
     for t in range(traj_len - 1):
-      data_x.append(self._flowmap.step(self._ode, data_x[t], param))
+      data_x.append(self._flowmap.step(self._ode, data_x[t], data_param[t]))
+      if param_time_dependent:
+        param = generate_param()
+      data_param.append(param)
 
     # Reshape and transpose data_x for the correct format
     self._data_x = torch.cat(data_x, dim=0)
 
     # Repeat parameters for each trajectory length
-    repeats_constant = traj_len * torch.ones((n_traj, ), dtype=torch.int32)
-    self._data_param = param.repeat_interleave(repeats_constant, dim=0)
+    self._data_param = torch.cat(data_param, dim=0)
 
     self._labels = self._flowmap.step(self._ode, self._data_x, self._data_param)
 

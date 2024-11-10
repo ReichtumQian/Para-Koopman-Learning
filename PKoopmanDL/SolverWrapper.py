@@ -58,6 +58,8 @@ class SolverWrapper:
       self.param_max = self._data['dataset']['param_max']
       self.seed_param = self._data['dataset']['seed_param']
       self.n_traj_per_param = self._data['dataset']['n_traj_per_param']
+      self.param_time_dependent = self._data['dataset'].get(
+          'param_time_dependent', False)
       if isinstance(self.param_min, list):
         self.param_min = torch.tensor(self.param_min).unsqueeze(0)
       if isinstance(self.param_max, list):
@@ -186,7 +188,7 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
     self.dataset.generate_data(self.n_traj, self.n_traj_per_param,
                                self.traj_len, self.x_min, self.x_max,
                                self.param_min, self.param_max, self.seed_x,
-                               self.seed_param)
+                               self.seed_param, self.param_time_dependent)
     self.train_dataset, self.val_dataset = torch.utils.data.random_split(
         self.dataset, [
             int(self.train_ratio * len(self.dataset)),

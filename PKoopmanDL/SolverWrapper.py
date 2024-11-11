@@ -5,7 +5,7 @@ from .FlowMap import *
 from .ODE import *
 from .ODEDataSet import *
 from .Dictionary import *
-from .Solver import *
+from .KoopmanSolver import *
 from .Net import *
 
 

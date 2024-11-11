@@ -7,7 +7,7 @@ from .Log import *
 from .Net import *
 from .ODE import *
 from .ODEDataSet import *
-from .Solver import *
+from .KoopmanSolver import *
 from .SolverWrapper import *
 
 if torch.cuda.is_available():

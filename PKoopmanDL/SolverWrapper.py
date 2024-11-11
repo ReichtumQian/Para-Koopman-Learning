@@ -165,6 +165,27 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
   def __init__(self, config_file):
     super().__init__(config_file, True)
 
+  def save_dataset(self, path):
+    self.dataset.save(path)
+
+  def load_dataset_setup(self,
+                         path,
+                         nontrain_func,
+                         x_sample_func=torch.rand,
+                         param_sample_func=torch.rand):
+    self._init_ode()
+    self._init_flowmap()
+    self.dataset = ParamODEDataSet(self.ode, self.flowmap, x_sample_func,
+                                   param_sample_func)
+    self.dataset.load(path)
+    self.train_dataset, self.val_dataset = torch.utils.data.random_split(
+        self.dataset, [
+            int(self.train_ratio * len(self.dataset)),
+            len(self.dataset) - int(self.train_ratio * len(self.dataset))
+        ])
+    self._init_dictionary(nontrain_func)
+    self._init_solver()
+
   def _read_dataset_config(self):
     super()._read_dataset_config()
     self.train_ratio = self._data['dataset']['train_ratio']

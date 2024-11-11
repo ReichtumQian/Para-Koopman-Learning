@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import numbers
+import pickle
 from .Log import *
 from tqdm import tqdm
 
@@ -54,6 +55,19 @@ class ODEDataSet(torch.utils.data.Dataset):
     if (not self._generated):
       raise RuntimeError("The data has not been generated yet.")
     return self._data_x
+
+  def save(self, file):
+    if not self._generated:
+      raise RuntimeError("The data has not been generated yet.")
+    with open(file, 'wb') as f:
+      pickle.dump({'data_x': self._data_x, 'labels': self._labels}, f)
+
+  def load(self, file):
+    with open(file, 'rb') as f:
+      data = pickle.load(f)
+    self._data_x = data['data_x']
+    self._labels = data['labels']
+    self._generated = True
 
 
 class ParamODEDataSet(ODEDataSet):
@@ -109,7 +123,7 @@ class ParamODEDataSet(ODEDataSet):
     param = generate_param()
     data_param = [param]
     info_message("[ParamODEDataSet] Start generating trajectories...")
-    for t in tqdm(range(traj_len - 1)):
+    for t in tqdm(range(traj_len - 1), desc="Generating trajectories"):
       data_x.append(self._flowmap.step(self._ode, data_x[t], data_param[t]))
       if param_time_dependent:
         param = generate_param()
@@ -121,6 +135,7 @@ class ParamODEDataSet(ODEDataSet):
     # Repeat parameters for each trajectory length
     self._data_param = torch.cat(data_param, dim=0)
 
+    info_message("[ParamODEDataSet] Start generating labels...")
     self._labels = self._flowmap.step(self._ode, self._data_x, self._data_param)
 
     self._generated = True
@@ -136,3 +151,22 @@ class ParamODEDataSet(ODEDataSet):
     if (not self._generated):
       raise RuntimeError("The data has not been generated yet.")
     return self._data_param
+
+  def save(self, file):
+    if not self._generated:
+      raise RuntimeError("The data has not been generated yet.")
+    with open(file, 'wb') as f:
+      pickle.dump(
+          {
+              'data_x': self._data_x,
+              'labels': self._labels,
+              'data_param': self._data_param
+          }, f)
+
+  def load(self, file):
+    with open(file, 'rb') as f:
+      data = pickle.load(f)
+    self._data_x = data['data_x']
+    self._labels = data['labels']
+    self._data_param = data['data_param']
+    self._generated = True

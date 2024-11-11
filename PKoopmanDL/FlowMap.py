@@ -3,6 +3,7 @@ import scipy.integrate
 import scipy.optimize
 import torch
 import scipy
+from tqdm import tqdm
 from scipy.optimize import fsolve
 from .Factory import *
 from .Log import *
@@ -117,15 +118,15 @@ class ScipyFlowMap(FlowMap):
     else:
       param = u
     y_list = []
-    for i in range(x.size(0)):
+    for i in tqdm(range(x.size(0)), desc="FlowMap stepping", leave=False):
       y_list.append(
           scipy.integrate.solve_ivp(rhs, (0, self._t_step),
                                     x[i, :].detach().numpy(),
                                     args=(param[i, :], ),
                                     method=self._solver_type))
-    y = np.array(y_list)
+    y = np.stack([y_list[i].y[:, -1] for i in range(x.size(0))])
     debug_message(f"[{self._solver_type}] Finish stepping...")
-    return torch.from_numpy(y)
+    return torch.from_numpy(y).float()
 
 
 class RungeKutta23(ScipyFlowMap):

@@ -194,7 +194,7 @@ class FortewegDeVries(AbstractODE):
         print(torch.nonzero(torch.isnan(result)))
         print(torch.nonzero(torch.isinf(result)))
         raise ValueError("NaN or Inf detected in the result.")
-      return result
+      return result.float()
 
     super().__init__(dim, param_dim, rhs)
 

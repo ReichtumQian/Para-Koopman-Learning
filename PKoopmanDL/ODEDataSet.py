@@ -1,6 +1,8 @@
 import torch
 import numpy as np
 import numbers
+from .Log import *
+from tqdm import tqdm
 
 
 class ODEDataSet(torch.utils.data.Dataset):
@@ -75,6 +77,7 @@ class ParamODEDataSet(ODEDataSet):
                     seed_x=11,
                     seed_param=22,
                     param_time_dependent=False):
+    info_message("[ParamODEDataSet] Start generating data...")
     # generate x
     if isinstance(x_min, numbers.Number):
       x_min = torch.ones((1, self._ode.dim)) * x_min
@@ -105,7 +108,8 @@ class ParamODEDataSet(ODEDataSet):
     data_x = [x0]
     param = generate_param()
     data_param = [param]
-    for t in range(traj_len - 1):
+    info_message("[ParamODEDataSet] Start generating trajectories...")
+    for t in tqdm(range(traj_len - 1)):
       data_x.append(self._flowmap.step(self._ode, data_x[t], data_param[t]))
       if param_time_dependent:
         param = generate_param()
@@ -120,6 +124,7 @@ class ParamODEDataSet(ODEDataSet):
     self._labels = self._flowmap.step(self._ode, self._data_x, self._data_param)
 
     self._generated = True
+    info_message("[ParamODEDataSet] Data generated.")
 
   def __getitem__(self, idx):
     if (not self._generated):

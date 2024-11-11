@@ -5,6 +5,7 @@ import torch
 import scipy
 from scipy.optimize import fsolve
 from .Factory import *
+from .Log import *
 
 
 class FlowMap:
@@ -101,8 +102,50 @@ class RungeKutta4(FlowMap):
     return x
 
 
+class ScipyFlowMap(FlowMap):
+
+  def step(self, ode, x, u):
+    debug_message(f"[{self._solver_type}] Start stepping...")
+
+    def rhs(t, y, param):
+      return ode.rhs(torch.from_numpy(y).unsqueeze(0),
+                     param.unsqueeze(0)).squeeze(0).numpy()
+
+    data_size = x.size(0)
+    if u.size(0) == 1:
+      param = u.expand(data_size, u.size(1))
+    else:
+      param = u
+    y_list = []
+    for i in range(x.size(0)):
+      y_list.append(
+          scipy.integrate.solve_ivp(rhs, (0, self._t_step),
+                                    x[i, :].detach().numpy(),
+                                    args=(param[i, :], ),
+                                    method=self._solver_type))
+    y = np.array(y_list)
+    debug_message(f"[{self._solver_type}] Finish stepping...")
+    return torch.from_numpy(y)
+
+
+class RungeKutta23(ScipyFlowMap):
+
+  def __init__(self, t_step, dt=1e-3):
+    super().__init__(t_step, dt)
+    self._solver_type = 'RK23'
+
+
+class RungeKutta45(ScipyFlowMap):
+
+  def __init__(self, t_step, dt=1e-3):
+    super().__init__(t_step, dt)
+    self._solver_type = 'RK45'
+
+
 # Factory
 FLOWMAPFACTORY = Factory()
 FLOWMAPFACTORY.register("forward euler", ForwardEuler)
 FLOWMAPFACTORY.register("backward euler", BackwardEuler)
 FLOWMAPFACTORY.register("rk4", RungeKutta4)
+FLOWMAPFACTORY.register("rk23", RungeKutta23)
+FLOWMAPFACTORY.register("rk45", RungeKutta45)

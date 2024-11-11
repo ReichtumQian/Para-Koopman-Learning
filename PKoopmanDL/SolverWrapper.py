@@ -1,12 +1,13 @@
 import json
 import torch
 from .Factory import *
-from .FlowMap import *
+from .Dynamics import *
 from .ODE import *
-from .ODEDataSet import *
+from .DynamicsDataSet import *
 from .Dictionary import *
 from .KoopmanSolver import *
 from .Net import *
+from .ODESolver import *
 
 
 class SolverWrapper:
@@ -80,8 +81,8 @@ class SolverWrapper:
     self.ode = ODEFACTORY.create(self.equ_type)
 
   def _init_flowmap(self):
-    self.flowmap = FLOWMAPFACTORY.create(self.flowmap_type, self.t_step,
-                                         self.dt)
+    self.flowmap = ODESOLVERFACTORY.create(self.flowmap_type, self.ode,
+                                           self.t_step, self.dt)
 
   def _init_dataset(self, x_sample_func, param_sample_func):
     return NotImplementedError
@@ -100,7 +101,8 @@ class EDMDRBFSolverWrapper(SolverWrapper):
     self.reg = self._data['dictionary']['reg']
 
   def _init_dataset(self, x_sample_func, param_sample_func):
-    self.dataset = ODEDataSet(self.ode, self.flowmap, x_sample_func)
+    self.dynamics = DiscreteDynamics(self.flowmap, self.ode.dim)
+    self.dataset = DynamicsDataSet(self.dynamics, x_sample_func)
     self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min,
                                self.x_max, self.param, self.seed_x)
 
@@ -136,7 +138,8 @@ class EDMDDLSolverWrapper(SolverWrapper):
     self.dic_lr = self._data['solver']['dic_lr']
 
   def _init_dataset(self, x_sample_func, param_sample_func):
-    self.dataset = ODEDataSet(self.ode, self.flowmap, x_sample_func)
+    self.dynamics = DiscreteDynamics(self.flowmap, self.ode.dim)
+    self.dataset = DynamicsDataSet(self.dynamics, x_sample_func)
     self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min,
                                self.x_max, self.param, self.seed_x)
     self.train_dataset, self.val_dataset = torch.utils.data.random_split(
@@ -175,8 +178,10 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
                          param_sample_func=torch.rand):
     self._init_ode()
     self._init_flowmap()
-    self.dataset = ParamODEDataSet(self.ode, self.flowmap, x_sample_func,
-                                   param_sample_func)
+    self.dynamics = DiscreteDynamics(self.flowmap, self.ode.dim,
+                                     self.ode.param_dim)
+    self.dataset = ParamDynamicsDataSet(self.dynamics, x_sample_func,
+                                        param_sample_func)
     self.dataset.load(path)
     self.train_dataset, self.val_dataset = torch.utils.data.random_split(
         self.dataset, [
@@ -204,8 +209,10 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
     self.koopman_lr = self._data['solver']['koopman_lr']
 
   def _init_dataset(self, x_sample_func, param_sample_func):
-    self.dataset = ParamODEDataSet(self.ode, self.flowmap, x_sample_func,
-                                   param_sample_func)
+    self.dynamics = DiscreteDynamics(self.flowmap, self.ode.dim,
+                                     self.ode.param_dim)
+    self.dataset = ParamDynamicsDataSet(self.dynamics, x_sample_func,
+                                        param_sample_func)
     self.dataset.generate_data(self.n_traj, self.n_traj_per_param,
                                self.traj_len, self.x_min, self.x_max,
                                self.param_min, self.param_max, self.seed_x,

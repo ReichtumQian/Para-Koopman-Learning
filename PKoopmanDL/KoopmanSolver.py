@@ -155,7 +155,7 @@ class ParamKoopmanDLSolver:
         opt_dictionary.zero_grad()
         opt_koopman.zero_grad()
         X = self._dictionary(data_x)
-        X = paramkoopman(data_param, X).to(DEVICE)
+        X = paramkoopman(X, data_param).to(DEVICE)
         Y = self._dictionary(labels).to(DEVICE)
         if debug_level():
           error = torch.max(torch.abs(X - Y))
@@ -179,7 +179,7 @@ class ParamKoopmanDLSolver:
       with torch.no_grad():
         for data_x, data_param, labels in dataloader_val:
           X = self._dictionary(data_x)
-          X = paramkoopman(data_param, X).to(DEVICE)
+          X = paramkoopman(X, data_param).to(DEVICE)
           Y = self._dictionary(labels).to(DEVICE)
           val_loss += loss_func(X, Y).item() * data_x.size(0)
           val_num_samples += data_x.size(0)

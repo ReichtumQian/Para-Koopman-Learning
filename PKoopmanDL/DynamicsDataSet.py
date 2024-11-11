@@ -6,32 +6,32 @@ from .Log import *
 from tqdm import tqdm
 
 
-class ODEDataSet(torch.utils.data.Dataset):
+class DynamicsDataSet(torch.utils.data.Dataset):
 
-  def __init__(self, ode, flowmap, x_sample_func=torch.rand):
-    self._ode = ode
-    self._flowmap = flowmap
+  def __init__(self, dynamics, x_sample_func=torch.rand):
+    self._dynamics = dynamics
     self._generated = False
     self._x_sample_func = x_sample_func
 
   def generate_data(self, n_traj, traj_len, x_min, x_max, param, seed_x=11):
+    dim = self._dynamics.dim
     if isinstance(x_min, numbers.Number):
-      x_min = torch.ones((1, self._ode.dim)) * x_min
+      x_min = torch.ones((1, dim)) * x_min
     if isinstance(x_max, numbers.Number):
-      x_max = torch.ones((1, self._ode.dim)) * x_max
-    x_min = x_min.expand(n_traj, self._ode.dim)
-    x_max = x_max.expand(n_traj, self._ode.dim)
+      x_max = torch.ones((1, dim)) * x_max
+    x_min = x_min.expand(n_traj, dim)
+    x_max = x_max.expand(n_traj, dim)
     torch.manual_seed(seed_x)
-    x0 = self._x_sample_func(n_traj, self._ode.dim)
+    x0 = self._x_sample_func(n_traj, dim)
     x0 = x0 * (x_max - x_min) + x_min
 
     data_x = [x0]
     for t in range(traj_len - 1):
-      data_x.append(self._flowmap.step(self._ode, data_x[t], param))
+      data_x.append(self._dynamics.step(data_x[t], param))
 
     # Reshape and transpose data_x for the correct format
     self._data_x = torch.cat(data_x, dim=0)
-    self._labels = self._flowmap.step(self._ode, self._data_x, param)
+    self._labels = self._dynamics.step(self._data_x, param)
     self._generated = True
 
   def __getitem__(self, idx):
@@ -70,14 +70,13 @@ class ODEDataSet(torch.utils.data.Dataset):
     self._generated = True
 
 
-class ParamODEDataSet(ODEDataSet):
+class ParamDynamicsDataSet(DynamicsDataSet):
 
   def __init__(self,
-               ode,
-               flowmap,
+               dynamics,
                x_sample_func=torch.rand,
                param_sample_func=torch.rand):
-    super().__init__(ode, flowmap, x_sample_func)
+    super().__init__(dynamics, x_sample_func)
     self._param_sample_func = param_sample_func
 
   def generate_data(self,
@@ -91,30 +90,31 @@ class ParamODEDataSet(ODEDataSet):
                     seed_x=11,
                     seed_param=22,
                     param_time_dependent=False):
-    info_message("[ParamODEDataSet] Start generating data...")
+    dim = self._dynamics.dim
+    param_dim = self._dynamics.param_dim
+    info_message("[ParamDynamicsDataSet] Start generating data...")
     # generate x
     if isinstance(x_min, numbers.Number):
-      x_min = torch.ones((1, self._ode.dim)) * x_min
+      x_min = torch.ones((1, dim)) * x_min
     if isinstance(x_max, numbers.Number):
-      x_max = torch.ones((1, self._ode.dim)) * x_max
-    x_min = x_min.expand(n_traj, self._ode.dim)
-    x_max = x_max.expand(n_traj, self._ode.dim)
+      x_max = torch.ones((1, dim)) * x_max
+    x_min = x_min.expand(n_traj, dim)
+    x_max = x_max.expand(n_traj, dim)
     torch.manual_seed(seed_x)
-    x0 = self._x_sample_func(n_traj, self._ode.dim)
+    x0 = self._x_sample_func(n_traj, dim)
     x0 = x0 * (x_max - x_min) + x_min
 
     # generate param
     if isinstance(param_min, numbers.Number):
-      param_min = torch.ones((1, self._ode.param_dim)) * param_min
+      param_min = torch.ones((1, param_dim)) * param_min
     if isinstance(param_max, numbers.Number):
-      param_max = torch.ones((1, self._ode.param_dim)) * param_max
-    param_min = param_min.expand(n_traj, self._ode.param_dim)
-    param_max = param_max.expand(n_traj, self._ode.param_dim)
+      param_max = torch.ones((1, param_dim)) * param_max
+    param_min = param_min.expand(n_traj, param_dim)
+    param_max = param_max.expand(n_traj, param_dim)
     torch.manual_seed(seed_param)
 
     def generate_param():
-      param = self._param_sample_func(int(n_traj / n_traj_per_param),
-                                      self._ode.param_dim)
+      param = self._param_sample_func(int(n_traj / n_traj_per_param), param_dim)
       param = param.repeat_interleave(n_traj_per_param, dim=0)
       param = param * (param_max - param_min) + param_min
       return param
@@ -122,9 +122,9 @@ class ParamODEDataSet(ODEDataSet):
     data_x = [x0]
     param = generate_param()
     data_param = [param]
-    info_message("[ParamODEDataSet] Start generating trajectories...")
+    info_message("[ParamDynamicsDataSet] Start generating trajectories...")
     for t in tqdm(range(traj_len - 1), desc="Generating trajectories"):
-      data_x.append(self._flowmap.step(self._ode, data_x[t], data_param[t]))
+      data_x.append(self._dynamics.step(data_x[t], data_param[t]))
       if param_time_dependent:
         param = generate_param()
       data_param.append(param)
@@ -135,11 +135,11 @@ class ParamODEDataSet(ODEDataSet):
     # Repeat parameters for each trajectory length
     self._data_param = torch.cat(data_param, dim=0)
 
-    info_message("[ParamODEDataSet] Start generating labels...")
-    self._labels = self._flowmap.step(self._ode, self._data_x, self._data_param)
+    info_message("[ParamDynamicsDataSet] Start generating labels...")
+    self._labels = self._dynamics.step(self._data_x, self._data_param)
 
     self._generated = True
-    info_message("[ParamODEDataSet] Data generated.")
+    info_message("[ParamDynamicsDataSet] Data generated.")
 
   def __getitem__(self, idx):
     if (not self._generated):

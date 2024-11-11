@@ -7,62 +7,32 @@ from tqdm import tqdm
 from scipy.optimize import fsolve
 from .Factory import *
 from .Log import *
+from .Dynamics import TransitionFunction
 
 
-class FlowMap:
+class ODESolver(TransitionFunction):
 
-  def __init__(self, t_step, dt=1e-3):
-    """Initialize the FlowMap instance.
-
-    Args:
-        dt (float): The time step size of the flow map. Defaults to 1e-3.
-    """
+  def __init__(self, ode, t_step, dt=1e-3):
+    self._ode = ode
     self._t_step = t_step
     self._dt = dt
 
-  def generate_traj_data(self, ode, x0, u, traj_len):
-    x = [x0]
-    for t in range(traj_len - 1):
-      x.append(self.step(ode, x[-1], u))
-    x = torch.cat(x, dim=0)
-    return x
-
-  def step(self, ode, x, u):
+  def step(self, x, u):
     return NotImplementedError
 
 
-class ForwardEuler(FlowMap):
+class ForwardEuler(ODESolver):
 
-  def step(self, ode, x, u):
-    """Apply one step of the Forward Euler method.
-
-    Args:
-        ode (AbstractODE): The ODE system.
-        x (tensor): The current state.
-        u (tensor): The parameter of the ODE system.
-
-    Returns:
-        tensor: The state after one step of the Forward Euler method.
-    """
+  def step(self, x, u):
     n_step = int(self._t_step / self._dt)
     for _ in range(n_step):
-      x = x + self._dt * ode.rhs(x, u)
+      x = x + self._dt * self._ode.rhs(x, u)
     return x
 
 
-class BackwardEuler(FlowMap):
+class BackwardEuler(ODESolver):
 
-  def step(self, ode, x, u):
-    """Apply one step of the Backward Euler method.
-
-    Args:
-        ode (AbstractODE): The ODE system.
-        x (tensor): The current state.
-        u (tensor): The parameter of the ODE system.
-
-    Returns:
-        tensor: The state after one step of the Backward Euler method.
-    """
+  def step(self, x, u):
     n_step = int(self._t_step / self._dt)
     x_numpy = x.detach().numpy()
     N = x_numpy.shape[0]
@@ -71,8 +41,8 @@ class BackwardEuler(FlowMap):
 
       def equ(x_next):
         x_next = np.reshape(x_next, (N, d))
-        result = x_next - x_numpy - self._dt * ode.rhs(torch.from_numpy(x_next),
-                                                       u).numpy()
+        result = x_next - x_numpy - self._dt * self._ode.rhs(
+            torch.from_numpy(x_next), u).numpy()
         return result.flatten()
 
       x_numpy = fsolve(equ, x_numpy)
@@ -80,19 +50,10 @@ class BackwardEuler(FlowMap):
     return torch.from_numpy(x_numpy).to(torch.float32)
 
 
-class RungeKutta4(FlowMap):
+class RungeKutta4(ODESolver):
 
-  def step(self, ode, x, u):
-    """Apply one step of the 4th-order Runge-Kutta method.
-
-    Args:
-        ode (AbstractODE): The ODE system.
-        x (tensor): The current state.
-        u (tensor): The parameter of the ODE system.
-
-    Returns:
-        tensor: The state after one step of the 4th-order Runge-Kutta method.
-    """
+  def step(self, x, u):
+    ode = self._ode
     n_step = int(self._t_step / self._dt)
     for _ in range(n_step):
       k1 = self._dt * ode.rhs(x, u)
@@ -103,10 +64,11 @@ class RungeKutta4(FlowMap):
     return x
 
 
-class ScipyFlowMap(FlowMap):
+class ScipyODESolver(ODESolver):
 
-  def step(self, ode, x, u):
+  def step(self, x, u):
     debug_message(f"[{self._solver_type}] Start stepping...")
+    ode = self._ode
 
     def rhs(t, y, param):
       return ode.rhs(torch.from_numpy(y).unsqueeze(0),
@@ -129,14 +91,14 @@ class ScipyFlowMap(FlowMap):
     return torch.from_numpy(y).float()
 
 
-class RungeKutta23(ScipyFlowMap):
+class RungeKutta23(ScipyODESolver):
 
   def __init__(self, t_step, dt=1e-3):
     super().__init__(t_step, dt)
     self._solver_type = 'RK23'
 
 
-class RungeKutta45(ScipyFlowMap):
+class RungeKutta45(ScipyODESolver):
 
   def __init__(self, t_step, dt=1e-3):
     super().__init__(t_step, dt)
@@ -144,9 +106,9 @@ class RungeKutta45(ScipyFlowMap):
 
 
 # Factory
-FLOWMAPFACTORY = Factory()
-FLOWMAPFACTORY.register("forward euler", ForwardEuler)
-FLOWMAPFACTORY.register("backward euler", BackwardEuler)
-FLOWMAPFACTORY.register("rk4", RungeKutta4)
-FLOWMAPFACTORY.register("rk23", RungeKutta23)
-FLOWMAPFACTORY.register("rk45", RungeKutta45)
+ODESOLVERFACTORY = Factory()
+ODESOLVERFACTORY.register("forward euler", ForwardEuler)
+ODESOLVERFACTORY.register("backward euler", BackwardEuler)
+ODESOLVERFACTORY.register("rk4", RungeKutta4)
+ODESOLVERFACTORY.register("rk23", RungeKutta23)
+ODESOLVERFACTORY.register("rk45", RungeKutta45)

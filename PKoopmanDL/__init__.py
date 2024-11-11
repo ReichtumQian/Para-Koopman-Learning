@@ -1,12 +1,12 @@
 import torch
 
 from .Dictionary import *
-from .FlowMap import *
+from .Dynamics import *
 from .Koopman import *
 from .Log import *
 from .Net import *
 from .ODE import *
-from .ODEDataSet import *
+from .DynamicsDataSet import *
 from .KoopmanSolver import *
 from .SolverWrapper import *
 

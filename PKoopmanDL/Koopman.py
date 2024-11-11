@@ -27,17 +27,26 @@ class Koopman:
     """
     return self._func(x)
 
-  def predict(self, x0, dictionary, state_pos, dim_nontrain, traj_len):
+  def predict(self, x0, dictionary, state_pos, traj_len):
     y = []
     x = x0
     psi = dictionary(x0)
-    y.append(psi[:, :dim_nontrain])
+    y.append(psi[:, state_pos])
     for _ in range(traj_len - 1):
       psi = self(psi)
-      y.append(psi[:, :dim_nontrain])
       x = psi[:, state_pos]
+      y.append(x)
       psi = dictionary(x)
-    return torch.stack(y, dim=1)  # size: (N, traj_len, dim_nontrain)
+    return torch.stack(y, dim=1)  # size: (N, traj_len, number of state)
+
+  def predict_observable(self, x0, dictionary, observable_pos, traj_len):
+    y = []
+    psi = dictionary(x0)
+    y.append(psi[:, observable_pos])
+    for _ in range(traj_len - 1):
+      psi = self(psi)
+      y.append(psi[:, observable_pos])
+    return torch.stack(y, dim=1)  # size: (N, traj_len, number of observable)
 
   def _compute_eig(self):
     eigenvalues, eigenvectors = np.linalg.eig(self._K.detach().numpy())
@@ -89,16 +98,25 @@ class ParamKoopman:
   def parameters(self):
     return self._network.parameters()
 
-  def predict(self, param, x0, dictionary, state_pos, dim_nontrain, traj_len):
+  def predict(self, param, x0, dictionary, state_pos, traj_len):
     y = []
     psi = dictionary(x0)
-    y.append(psi[:, :dim_nontrain])
+    y.append(psi[:, state_pos])
     for _ in range(traj_len - 1):
       psi = self(param, psi)
-      y.append(psi[:, :dim_nontrain])
       x = psi[:, state_pos]
+      y.append(x)
       psi = dictionary(x)
-    return torch.stack(y, dim=1)  # size: (N, traj_len, dim_nontrain)
+    return torch.stack(y, dim=1)  # size: (N, traj_len, number of state)
+
+  def predict_observable(self, param, x0, dictionary, observable_pos, traj_len):
+    y = []
+    psi = dictionary(x0)
+    y.append(psi[:, observable_pos])
+    for _ in range(traj_len - 1):
+      psi = self(param, psi)
+      y.append(psi[:, observable_pos])
+    return torch.stack(y, dim=1)  # size: (N, traj_len, number of observable)
 
   def train(self):
     self._network.train()

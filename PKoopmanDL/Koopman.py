@@ -3,7 +3,7 @@ import torch
 from .Dynamics import TransitionFunction
 
 
-class Koopman:
+class Koopman(TransitionFunction):
 
   def __init__(self, K):
     """Initialize the Koopman instance.

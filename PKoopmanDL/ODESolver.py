@@ -93,15 +93,15 @@ class ScipyODESolver(ODESolver):
 
 class RungeKutta23(ScipyODESolver):
 
-  def __init__(self, t_step, dt=1e-3):
-    super().__init__(t_step, dt)
+  def __init__(self, ode, t_step, dt=1e-3):
+    super().__init__(ode, t_step, dt)
     self._solver_type = 'RK23'
 
 
 class RungeKutta45(ScipyODESolver):
 
-  def __init__(self, t_step, dt=1e-3):
-    super().__init__(t_step, dt)
+  def __init__(self, ode, t_step, dt=1e-3):
+    super().__init__(ode, t_step, dt)
     self._solver_type = 'RK45'
 
 

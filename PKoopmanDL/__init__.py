@@ -1,5 +1,6 @@
 import torch
 
+from .ControlSolver import *
 from .Dictionary import *
 from .Dynamics import *
 from .Koopman import *

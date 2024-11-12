@@ -2,6 +2,8 @@ import torch
 import scipy
 import numpy as np
 import numbers
+from tqdm import tqdm
+from .Log import *
 
 
 class OptimalControlSolver:
@@ -10,7 +12,7 @@ class OptimalControlSolver:
     self._dynamics = dynamics
     self._loss_func = loss_func
 
-  def solve(self, x0):
+  def solve(self, state0, control_min, control_max):
     return NotImplementedError
 
 
@@ -64,7 +66,8 @@ class KoopmanMPCSolver(OptimalControlSolver):
 
     # solve the optimal control problem
     opt_control_list = []
-    for t in range(traj_len - tau):
+    info_message("[KoopmanMPCSolver] Solving the optimal control problem...")
+    for t in tqdm(range(traj_len - tau), desc="Solving"):
       results = scipy.optimize.minimize(self._loss_func,
                                         x0=control_init,
                                         args=(state_traj[-1], t),
@@ -72,9 +75,12 @@ class KoopmanMPCSolver(OptimalControlSolver):
                                         method='L-BFGS-B')
       if t == traj_len - tau - 1:
         controls = results.x.reshape(tau, control_dim)
-        for control in controls:
+        for it in controls:
+          control = torch.from_numpy(it).unsqueeze(0)
           opt_control_list.append(control)
-          state_traj.append(self._dynamics.step(state_traj[-1], control))
+          state = torch.from_numpy(state_traj[-1]).unsqueeze(0)
+          state_traj.append(
+              self._dynamics.step(state, control).squeeze(0).detach().numpy())
         break
       control = torch.from_numpy(results.x.reshape(tau,
                                                    control_dim)[0]).unsqueeze(0)

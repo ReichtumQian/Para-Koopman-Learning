@@ -3,12 +3,12 @@ import scipy.integrate
 import scipy.optimize
 import torch
 import scipy
-import joblib
 from tqdm import tqdm
 from scipy.optimize import fsolve
 from .Factory import *
 from .Log import *
 from .Dynamics import TransitionFunction
+from .Parallel import *
 
 
 class ODESolver(TransitionFunction):
@@ -87,8 +87,8 @@ class ScipyODESolver(ODESolver):
     else:
       param = u
     y_list = []
-    results = joblib.Parallel(n_jobs=-1)(joblib.delayed(solve_ivp)(i)
-                                         for i in range(x.size(0)))
+    results = joblib.Parallel(n_jobs=NJOBS)(joblib.delayed(solve_ivp)(i)
+                                            for i in range(x.size(0)))
     for result in results:
       y_list.append(result)
     y = np.stack([y_list[i].y[:, -1] for i in range(x.size(0))])

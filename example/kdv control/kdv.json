@@ -19,12 +19,12 @@
     "param_time_dependent": true
   },
   "dictionary": {
-    "dim_output": 6,
+    "dim_output": 25,
     "dim_nontrain": 3,
     "dic_layer_sizes": [100, 100, 100]
   },
   "solver": {
-    "n_epochs": 1000,
+    "n_epochs": 2000,
     "batch_size": 1000,
     "tol": 1e-9,
     "dic_lr": 1e-4,

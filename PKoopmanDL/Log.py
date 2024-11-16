@@ -28,3 +28,11 @@ def debug_message(message):
 
 def info_message(message):
   LOGGER.info(message)
+
+
+def warning_message(message):
+  LOGGER.warning(message)
+
+
+def error_message(message):
+  LOGGER.error(message)

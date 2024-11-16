@@ -67,12 +67,22 @@ class KoopmanMPCSolver(OptimalControlSolver):
     # solve the optimal control problem
     opt_control_list = []
     info_message("[KoopmanMPCSolver] Solving the optimal control problem...")
-    for t in tqdm(range(traj_len - tau), desc="Solving"):
+    if traj_len <= tau:
+      raise ValueError(
+          "The reference trajectory is smaller than or equal to the time horizon!"
+      )
+    pbar = tqdm(range(traj_len - tau), desc="Solving")
+    for t in pbar:
       results = scipy.optimize.minimize(self._loss_func,
                                         x0=control_init,
                                         args=(state_traj[-1], t),
                                         bounds=bounds,
-                                        method='L-BFGS-B')
+                                        method='L-BFGS-B',
+                                        jac='3-point')
+      if not results.success:
+        error_message("[KoopmanMPCSolver] Optimization failed!")
+      loss = f"{results.fun:.2e}"
+      pbar.set_postfix(loss=loss)
       if t == traj_len - tau - 1:
         controls = results.x.reshape(tau, control_dim)
         for it in controls:
@@ -90,4 +100,6 @@ class KoopmanMPCSolver(OptimalControlSolver):
           self._dynamics.step(state, control).squeeze(0).detach().numpy())
       opt_control_list.append(control)
 
+    opt_control_list = torch.cat(opt_control_list, dim=0)
+    state_traj = torch.from_numpy(np.array(state_traj))
     return opt_control_list, state_traj

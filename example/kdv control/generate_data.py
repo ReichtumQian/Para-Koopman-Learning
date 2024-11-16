@@ -30,7 +30,7 @@ def sample_func(row_size, col_size):
 
 
 def nontrain_func(x):
-  one = torch.ones((x.shape[0], 1))
+  one = torch.ones((x.size(0), 1))
   mass = torch.sum(x, dim=1, keepdim=True) * x_step
   momentum = torch.sum(x**2, dim=1, keepdim=True) * x_step
   return torch.cat((one, mass, momentum), dim=1)

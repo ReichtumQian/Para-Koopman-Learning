@@ -3,6 +3,7 @@ import scipy.integrate
 import scipy.optimize
 import torch
 import scipy
+import joblib
 from tqdm import tqdm
 from scipy.optimize import fsolve
 from .Factory import *
@@ -74,18 +75,22 @@ class ScipyODESolver(ODESolver):
       return ode.rhs(torch.from_numpy(y).unsqueeze(0),
                      param.unsqueeze(0)).squeeze(0).numpy()
 
+    def solve_ivp(i):
+      return scipy.integrate.solve_ivp(rhs, (0, self._t_step),
+                                       x[i, :].detach().numpy(),
+                                       args=(param[i, :], ),
+                                       method=self._solver_type)
+
     data_size = x.size(0)
     if u.size(0) == 1:
       param = u.expand(data_size, u.size(1))
     else:
       param = u
     y_list = []
-    for i in tqdm(range(x.size(0)), desc="FlowMap stepping", leave=False):
-      y_list.append(
-          scipy.integrate.solve_ivp(rhs, (0, self._t_step),
-                                    x[i, :].detach().numpy(),
-                                    args=(param[i, :], ),
-                                    method=self._solver_type))
+    results = joblib.Parallel(n_jobs=-1)(joblib.delayed(solve_ivp)(i)
+                                         for i in range(x.size(0)))
+    for result in results:
+      y_list.append(result)
     y = np.stack([y_list[i].y[:, -1] for i in range(x.size(0))])
     debug_message(f"[{self._solver_type}] Finish stepping...")
     return torch.from_numpy(y).float()

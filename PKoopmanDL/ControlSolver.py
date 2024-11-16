@@ -6,17 +6,7 @@ from tqdm import tqdm
 from .Log import *
 
 
-class OptimalControlSolver:
-
-  def __init__(self, dynamics, loss_func):
-    self._dynamics = dynamics
-    self._loss_func = loss_func
-
-  def solve(self, state0, control_min, control_max):
-    return NotImplementedError
-
-
-class KoopmanMPCSolver(OptimalControlSolver):
+class KoopmanMPCSolver:
 
   def __init__(self, dynamics, koopman, dictionary, ref_traj, time_horizon,
                observable_pos, lambda_param):
@@ -24,6 +14,8 @@ class KoopmanMPCSolver(OptimalControlSolver):
     self._time_horizon = time_horizon
     self._ref_traj = ref_traj
     self._observable_pos = observable_pos
+    self._dynamics = dynamics
+    self._loss_func = loss_func
 
     def loss_func(control_in, x_in, start_time):
       x = torch.from_numpy(x_in).unsqueeze(0)
@@ -39,8 +31,6 @@ class KoopmanMPCSolver(OptimalControlSolver):
       ref_loss = torch.sum(torch.square(m - ref)).item()
       control_loss = torch.sum(torch.square(control)).item()
       return ref_loss + lambda_param * control_loss
-
-    super().__init__(dynamics, loss_func)
 
   def solve(self, state0, control_min, control_max):
     if isinstance(control_min, numbers.Number):

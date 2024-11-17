@@ -2,7 +2,6 @@ from .Koopman import *
 from .Device import DEVICE
 from .Log import *
 from tqdm import tqdm
-import numpy as np
 import torch
 import math
 

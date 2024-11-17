@@ -115,5 +115,7 @@ nav:
       - Class EDMDRBFSolverWrapper: "ClassReferences/EDMDRBFSolverWrapper.md"
       - Class EDMDDLSolverWrapper: "ClassReferences/EDMDDLSolverWrapper.md"
       - Class ParamKoopmanDLSolverWrapper: "ClassReferences/ParamKoopmanDLSolverWrapper.md"
+    - Optimal Control Solver:
+      - Class KoopmanMPCSolver: "ClassReferences/KoopmanMPCSolver.md"
     - Factory:
       - Class Factory: "ClassReferences/Factory.md"

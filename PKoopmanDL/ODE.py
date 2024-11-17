@@ -149,7 +149,7 @@ class FitzHughNagumo(AbstractODE):
     super().__init__(dim, param_dim, rhs)
 
 
-class FortewegDeVries(AbstractODE):
+class KortewegDeVries(AbstractODE):
 
   def __init__(self):
     x_min = -torch.pi
@@ -204,4 +204,4 @@ ODEFACTORY = Factory()
 ODEFACTORY.register("Duffing", DuffingOscillator)
 ODEFACTORY.register("vdpm", VanderPolMathieu)
 ODEFACTORY.register("fhn", FitzHughNagumo)
-ODEFACTORY.register("fdv", FortewegDeVries)
+ODEFACTORY.register("kdv", KortewegDeVries)

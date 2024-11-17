@@ -15,7 +15,6 @@ class KoopmanMPCSolver:
     self._ref_traj = ref_traj
     self._observable_pos = observable_pos
     self._dynamics = dynamics
-    self._loss_func = loss_func
 
     def loss_func(control_in, x_in, start_time):
       x = torch.from_numpy(x_in).unsqueeze(0)
@@ -31,6 +30,8 @@ class KoopmanMPCSolver:
       ref_loss = torch.sum(torch.square(m - ref)).item()
       control_loss = torch.sum(torch.square(control)).item()
       return ref_loss + lambda_param * control_loss
+
+    self._loss_func = loss_func
 
   def solve(self, state0, control_min, control_max):
     if isinstance(control_min, numbers.Number):
@@ -92,4 +93,4 @@ class KoopmanMPCSolver:
 
     opt_control_list = torch.cat(opt_control_list, dim=0)
     state_traj = torch.from_numpy(np.array(state_traj))
-    return opt_control_list, state_traj
+    return opt_control_list

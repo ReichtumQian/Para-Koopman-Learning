@@ -187,8 +187,9 @@ class KortewegDeVries(AbstractODE):
       param1 = param[:, 0].view(-1, 1)
       param2 = param[:, 1].view(-1, 1)
       param3 = param[:, 2].view(-1, 1)
-      rhs2 = v1(x) * torch.sin(torch.pi * param1) + v2(x) * torch.sin(
-          torch.pi * param2) + v3(x) * torch.sin(torch.pi * param3)
+      # rhs2 = v1(x) * torch.sin(torch.pi * param1) + v2(x) * torch.sin(
+      #     torch.pi * param2) + v3(x) * torch.sin(torch.pi * param3)
+      rhs2 = v1(x) * param1 + v2(x) * param2 + v3(x) * param3
       result = rhs1 + rhs2
       if torch.isnan(result).any() or torch.isinf(result).any():
         print(torch.nonzero(torch.isnan(result)))

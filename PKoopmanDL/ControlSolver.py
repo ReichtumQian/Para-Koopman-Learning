@@ -29,11 +29,12 @@ class KoopmanMPCSolver:
         m[:, i] = obs_next
       ref_loss = torch.sum(torch.square(m - ref)).item()
       control_loss = torch.sum(torch.square(control)).item()
-      return ref_loss + lambda_param * control_loss
+      result = ref_loss + lambda_param * control_loss
+      return result
 
     self._loss_func = loss_func
 
-  def solve(self, state0, control_min, control_max):
+  def solve(self, state0, control_min, control_max, method='powell'):
     if isinstance(control_min, numbers.Number):
       control_min = [control_min] * self._dynamics.param_dim
     if isinstance(control_max, numbers.Number):
@@ -47,6 +48,9 @@ class KoopmanMPCSolver:
     for i in range(tau):
       for j in range(control_dim):
         bounds.append((control_min[j], control_max[j]))
+    lower_bounds, upper_bounds = zip(*bounds)
+    bounds = scipy.optimize.Bounds(lower_bounds, upper_bounds)
+    np.random.seed(0)  # for debugging
     control_init = np.random.uniform(0, 1, size=(tau, control_dim))
     for i in range(control_dim):
       control_init[:,
@@ -63,15 +67,22 @@ class KoopmanMPCSolver:
           "The reference trajectory is smaller than or equal to the time horizon!"
       )
     pbar = tqdm(range(traj_len - tau), desc="Solving")
+    disp = False
+    if debug_level():
+      disp = True
     for t in pbar:
       results = scipy.optimize.minimize(self._loss_func,
                                         x0=control_init,
                                         args=(state_traj[-1], t),
                                         bounds=bounds,
-                                        method='L-BFGS-B',
-                                        jac='3-point')
+                                        method=method,
+                                        options={'disp': disp})
       if not results.success:
-        error_message("[KoopmanMPCSolver] Optimization failed!")
+        warning_message(
+            f"[KoopmanMPCSolver] Optimization failed! Reason: {results.message}"
+        )
+        # print(results.x)
+        # warning_message(f"Jac = {results.jac}")
       loss = f"{results.fun:.2e}"
       pbar.set_postfix(loss=loss)
       if t == traj_len - tau - 1:
@@ -82,7 +93,7 @@ class KoopmanMPCSolver:
           state = torch.from_numpy(state_traj[-1]).unsqueeze(0)
           state_traj.append(
               self._dynamics.step(state, control).squeeze(0).detach().numpy())
-        break
+        continue
       control = torch.from_numpy(results.x.reshape(tau,
                                                    control_dim)[0]).unsqueeze(0)
       control_init = results.x.reshape((tau * control_dim, ))

@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch
 
+pkdl.set_n_jobs(32)
+
 # read the config file
 config_file = "kdv.json"
 solver = pkdl.ParamKoopmanDLSolverWrapper(config_file)
@@ -38,4 +40,4 @@ def nontrain_func(x):
 
 # set up the solver
 solver.setup(nontrain_func, sample_func)
-solver.save_dataset("data/kdv_dataset.pt")
+solver.save_dataset("data/kdv_dataset1000.pt")

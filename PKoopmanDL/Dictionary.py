@@ -3,27 +3,28 @@ import torch
 import scipy
 
 
+class ObservableFunction:
+
+  def __init__(self, func, dim):
+    self._func = func
+    self._dim = dim
+
+  @property
+  def dim(self):
+    return self._dim
+
+  def __call__(self, x):
+    return self._func(x)
+
+
 class Dictionary:
 
-  def __init__(self, function, dim_input, dim_output, dim_nontrain=0):
-    """ Initialize the Dictionary
-    Args:
-        function (tensor -> tensor): A batched vector function representing the basis functions.
-        dim_input (int): The dimension of the input.
-        dim_output (int): The dimension of the output.
-    """
+  def __init__(self, function, dim_input, dim_output):
     self._function = function
     self._dim_input = dim_input
     self._dim_output = dim_output
-    self._dim_nontrain = dim_nontrain
 
   def __call__(self, x):
-    """ Apply the dictionary
-    Args:
-        x (tensor): The input $\mathbb{R}^{N \times dim_input}$.
-    Returns:
-        tensor: The output $\mathbb{R}^{N \times dim_output}$.
-    """
     return self._function(x)
 
   @property
@@ -34,72 +35,39 @@ class Dictionary:
   def dim_output(self):
     return self._dim_output
 
-  @property
-  def dim_nontrain(self):
-    return self._dim_nontrain
-
 
 class TrainableDictionary(Dictionary):
 
-  def __init__(self, network, nontrain_func, dim_input, dim_output,
-               dim_nontrain):
-    """ Initialize the TrainableDictionary
-    Args:
-        network (torch.nn.Module): The trainable neural network,
-            which is a mapping $\mathbb{R}^{N \times N_x} \rightarrow \mathbb{R}^{N \times (N_{\psi} - N_y)}$.
-        nontrain_func (tensor -> tensor): The non-trainable neural network,
-            which is a mapping $\mathbb{R}^{N \times N_x} \rightarrow \mathbb{R}^{N \times N_y}$.
-        dim_input (int): The dimension of the input $N_x$.
-        dim_output (int): The dimension of the output $N_{\psi}$.
-        dim_nontrain (int): The number of non-trainable outputs $N_y$.
-    """
+  def __init__(self, network, observable_func, dim_input, dim_output):
     self._network = network
     function = lambda x: torch.cat(
-        (nontrain_func(x).to(x.device), self._network(x).to(x.device)), dim=1)
-    super().__init__(function, dim_input, dim_output, dim_nontrain)
+        (observable_func(x).to(x.device), torch.ones(
+            (x.size(0), 1)).to(x.device), self._network(x).to(x.device)),
+        dim=1)
+    super().__init__(function, dim_input, dim_output)
 
   def parameters(self):
-    """Return the parameters of the trainable neural network.
-
-    Returns:
-        iterable: An iterable of parameters of the neural network `__network`.
-    """
     return self._network.parameters()
 
   def train(self):
-    """Set the trainable neural network to training mode.
-    """
     self._network.train()
 
   def eval(self):
-    """Set the trainable neural network to evaluation mode.
-    """
     self._network.eval()
 
   def save(self, path):
-    """Save the trainable neural network to a file.
-
-    Args:
-        path (str): The path to the file.
-    """
     torch.save(self._network.state_dict(), path)
 
   def load(self, path):
-    """Load the trainable neural network from a file.
-
-    Args:
-        path (str): The path to the file.
-    """
     self._network.load_state_dict(torch.load(path))
 
 
 class RBFDictionary(Dictionary):
 
-  def __init__(self, data_x, nontrain_func, dim_input, dim_output, dim_nontrain,
-               reg):
-    dim_train = dim_output - dim_nontrain
+  def __init__(self, data_x, observable_func, dim_input, dim_output, reg):
+    dim_train = dim_output - observable_func.dim - 1
     # set the seed if you want to reproduce the same results
-    np.random.seed(0)
+    # np.random.seed(0)
     centers = scipy.cluster.vq.kmeans(data_x, dim_train)[0]
 
     def func(x):
@@ -110,8 +78,10 @@ class RBFDictionary(Dictionary):
         rbfs.append(rbf)
       rbfs = np.array(rbfs)
       rbfs = rbfs.T.reshape(x.shape[0], -1)
-      results = np.concatenate([nontrain_func(x).detach().numpy(), rbfs],
-                               axis=1)
+      results = np.concatenate(
+          [observable_func(x).detach().numpy(),
+           np.ones((x.shape[0], 1)), rbfs],
+          axis=1)
       return torch.from_numpy(results)
 
-    super().__init__(func, dim_input, dim_output, dim_nontrain)
+    super().__init__(func, dim_input, dim_output)

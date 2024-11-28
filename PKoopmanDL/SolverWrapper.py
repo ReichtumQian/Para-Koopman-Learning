@@ -3,7 +3,7 @@ import torch
 from .Factory import *
 from .Dynamics import *
 from .ODE import *
-from .DynamicsDataSet import *
+from .KoopmanDataSet import *
 from .Dictionary import *
 from .KoopmanSolver import *
 from .Net import *
@@ -12,10 +12,9 @@ from .ODESolver import *
 
 class SolverWrapper:
 
-  def __init__(self, config_file, use_param_dataset=False):
+  def __init__(self, config_file):
     with open(config_file) as f:
       self._data = json.load(f)
-    self._use_param_dataset = use_param_dataset
     self._read_ode_config()
     self._read_flowmap_config()
     self._read_dataset_config()
@@ -23,13 +22,13 @@ class SolverWrapper:
     self._read_solver_config()
 
   def setup(self,
-            nontrain_func,
+            observable_func,
             x_sample_func=torch.rand,
             param_sample_func=torch.rand):
     self._init_ode()
     self._init_flowmap()
     self._init_dataset(x_sample_func, param_sample_func)
-    self._init_dictionary(nontrain_func)
+    self._init_dictionary(observable_func)
     self._init_solver()
 
   def solve(self):
@@ -71,7 +70,6 @@ class SolverWrapper:
 
   def _read_dictionary_config(self):
     self.dim_output = self._data['dictionary']['dim_output']
-    self.dim_nontrain = self._data['dictionary']['dim_nontrain']
 
   def _read_solver_config(self):
     # do nothing
@@ -87,7 +85,7 @@ class SolverWrapper:
   def _init_dataset(self, x_sample_func, param_sample_func):
     return NotImplementedError
 
-  def _init_dictionary(self, nontrain_func):
+  def _init_dictionary(self, observable_func):
     return NotImplementedError
 
   def _init_solver(self):
@@ -96,20 +94,23 @@ class SolverWrapper:
 
 class EDMDRBFSolverWrapper(SolverWrapper):
 
+  def __init__(self, config_file):
+    self._use_param_dataset = False
+    super().__init__(config_file)
+
   def _read_dictionary_config(self):
     super()._read_dictionary_config()
     self.reg = self._data['dictionary']['reg']
 
   def _init_dataset(self, x_sample_func, param_sample_func):
     self.dynamics = DiscreteDynamics(self.flowmap, self.ode.dim)
-    self.dataset = DynamicsDataSet(self.dynamics, x_sample_func)
+    self.dataset = KoopmanDataSet(self.dynamics, x_sample_func)
     self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min,
                                self.x_max, self.param, self.seed_x)
 
-  def _init_dictionary(self, nontrain_func):
-    self.dictionary = RBFDictionary(self.dataset.data_x, nontrain_func,
-                                    self.ode.dim, self.dim_output,
-                                    self.dim_nontrain, self.reg)
+  def _init_dictionary(self, observable_func):
+    self.dictionary = RBFDictionary(self.dataset.data_x, observable_func,
+                                    self.ode.dim, self.dim_output, self.reg)
 
   def _init_solver(self):
     self.solver = EDMDSolver(self.dictionary)
@@ -119,6 +120,10 @@ class EDMDRBFSolverWrapper(SolverWrapper):
 
 
 class EDMDDLSolverWrapper(SolverWrapper):
+
+  def __init__(self, config_file):
+    self._use_param_dataset = False
+    super().__init__(config_file)
 
   def _read_dataset_config(self):
     super()._read_dataset_config()
@@ -139,7 +144,7 @@ class EDMDDLSolverWrapper(SolverWrapper):
 
   def _init_dataset(self, x_sample_func, param_sample_func):
     self.dynamics = DiscreteDynamics(self.flowmap, self.ode.dim)
-    self.dataset = DynamicsDataSet(self.dynamics, x_sample_func)
+    self.dataset = KoopmanDataSet(self.dynamics, x_sample_func)
     self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min,
                                self.x_max, self.param, self.seed_x)
     self.train_dataset, self.val_dataset = torch.utils.data.random_split(
@@ -148,11 +153,12 @@ class EDMDDLSolverWrapper(SolverWrapper):
             len(self.dataset) - int(self.train_ratio * len(self.dataset))
         ])
 
-  def _init_dictionary(self, nontrain_func):
-    network = FullConnResNet(self.ode.dim, self.dim_output - self.dim_nontrain,
+  def _init_dictionary(self, observable_func):
+    network = FullConnResNet(self.ode.dim,
+                             self.dim_output - observable_func.dim - 1,
                              self.dic_layer_sizes)
-    self.dictionary = TrainableDictionary(network, nontrain_func, self.ode.dim,
-                                          self.dim_output, self.dim_nontrain)
+    self.dictionary = TrainableDictionary(network, observable_func,
+                                          self.ode.dim, self.dim_output)
 
   def _init_solver(self):
     self.solver = EDMDDLSolver(self.dictionary, self.reg, self.reg_final)
@@ -166,29 +172,30 @@ class EDMDDLSolverWrapper(SolverWrapper):
 class ParamKoopmanDLSolverWrapper(SolverWrapper):
 
   def __init__(self, config_file):
-    super().__init__(config_file, True)
+    self._use_param_dataset = True
+    super().__init__(config_file)
 
   def save_dataset(self, path):
     self.dataset.save(path)
 
   def load_dataset_setup(self,
                          path,
-                         nontrain_func,
+                         observable_func,
                          x_sample_func=torch.rand,
                          param_sample_func=torch.rand):
     self._init_ode()
     self._init_flowmap()
     self.dynamics = DiscreteDynamics(self.flowmap, self.ode.dim,
                                      self.ode.param_dim)
-    self.dataset = ParamDynamicsDataSet(self.dynamics, x_sample_func,
-                                        param_sample_func)
+    self.dataset = ParamKoopmanDataSet(self.dynamics, x_sample_func,
+                                       param_sample_func)
     self.dataset.load(path)
     self.train_dataset, self.val_dataset = torch.utils.data.random_split(
         self.dataset, [
             int(self.train_ratio * len(self.dataset)),
             len(self.dataset) - int(self.train_ratio * len(self.dataset))
         ])
-    self._init_dictionary(nontrain_func)
+    self._init_dictionary(observable_func)
     self._init_solver()
 
   def _read_dataset_config(self):
@@ -211,8 +218,8 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
   def _init_dataset(self, x_sample_func, param_sample_func):
     self.dynamics = DiscreteDynamics(self.flowmap, self.ode.dim,
                                      self.ode.param_dim)
-    self.dataset = ParamDynamicsDataSet(self.dynamics, x_sample_func,
-                                        param_sample_func)
+    self.dataset = ParamKoopmanDataSet(self.dynamics, x_sample_func,
+                                       param_sample_func)
     self.dataset.generate_data(self.n_traj, self.n_traj_per_param,
                                self.traj_len, self.x_min, self.x_max,
                                self.param_min, self.param_max, self.seed_x,
@@ -223,11 +230,12 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
             len(self.dataset) - int(self.train_ratio * len(self.dataset))
         ])
 
-  def _init_dictionary(self, nontrain_func):
-    network = FullConnResNet(self.ode.dim, self.dim_output - self.dim_nontrain,
+  def _init_dictionary(self, observable_func):
+    network = FullConnResNet(self.ode.dim,
+                             self.dim_output - observable_func.dim - 1,
                              self.dic_layer_sizes)
-    self.dictionary = TrainableDictionary(network, nontrain_func, self.ode.dim,
-                                          self.dim_output, self.dim_nontrain)
+    self.dictionary = TrainableDictionary(network, observable_func,
+                                          self.ode.dim, self.dim_output)
 
   def _init_solver(self):
     self.solver = ParamKoopmanDLSolver(self.dictionary)

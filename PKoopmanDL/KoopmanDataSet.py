@@ -6,7 +6,7 @@ from .Log import *
 from tqdm import tqdm
 
 
-class DynamicsDataSet(torch.utils.data.Dataset):
+class KoopmanDataSet(torch.utils.data.Dataset):
 
   def __init__(self, dynamics, x_sample_func=torch.rand):
     self._dynamics = dynamics
@@ -70,7 +70,7 @@ class DynamicsDataSet(torch.utils.data.Dataset):
     self._generated = True
 
 
-class ParamDynamicsDataSet(DynamicsDataSet):
+class ParamKoopmanDataSet(KoopmanDataSet):
 
   def __init__(self,
                dynamics,
@@ -92,7 +92,7 @@ class ParamDynamicsDataSet(DynamicsDataSet):
                     param_time_dependent=False):
     dim = self._dynamics.dim
     param_dim = self._dynamics.param_dim
-    info_message("[ParamDynamicsDataSet] Start generating data...")
+    info_message("[ParamKoopmanDataSet] Start generating data...")
     # generate x
     if isinstance(x_min, numbers.Number):
       x_min = torch.ones((1, dim)) * x_min
@@ -122,7 +122,7 @@ class ParamDynamicsDataSet(DynamicsDataSet):
     data_x = [x0]
     param = generate_param()
     data_param = [param]
-    info_message("[ParamDynamicsDataSet] Start generating trajectories...")
+    info_message("[ParamKoopmanDataSet] Start generating trajectories...")
     for t in tqdm(range(traj_len - 1), desc="Generating trajectories"):
       data_x.append(self._dynamics.step(data_x[t], data_param[t]))
       if param_time_dependent:
@@ -135,11 +135,11 @@ class ParamDynamicsDataSet(DynamicsDataSet):
     # Repeat parameters for each trajectory length
     self._data_param = torch.cat(data_param, dim=0)
 
-    info_message("[ParamDynamicsDataSet] Start generating labels...")
+    info_message("[ParamKoopmanDataSet] Start generating labels...")
     self._labels = self._dynamics.step(self._data_x, self._data_param)
 
     self._generated = True
-    info_message("[ParamDynamicsDataSet] Data generated.")
+    info_message("[ParamKoopmanDataSet] Data generated.")
 
   def __getitem__(self, idx):
     if (not self._generated):

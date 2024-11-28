@@ -2,12 +2,6 @@ import torch
 from tqdm import tqdm
 
 
-class TransitionFunction:
-
-  def step(self, x, u):
-    return NotImplementedError
-
-
 class DiscreteDynamics:
 
   def __init__(self, trans_func, dim, param_dim=0):
@@ -28,14 +22,30 @@ class DiscreteDynamics:
 
   def traj(self, x0, u0, traj_len):
     x = [x0]
+    # if do not need parameter
+    if u0 == None:
+      u0 = torch.zeros(1, 1)
+    # if the parameters are time-independent
     if u0.size(0) == 1:
-      u = u0.expand(traj_len, -1)
+      u = u0.expand(traj_len - 1, -1)
     else:
       assert (u0.size(0) == traj_len - 1)
       u = u0
     for i in range(traj_len - 1):
       x.append(self.step(x[-1], u[i].unsqueeze(0)))
     return torch.stack(x, dim=1)  # size: (N, traj_len, number of state)
+
+
+class KoopmanDynamics(DiscreteDynamics):
+
+  def __init__(self, koopman, dictionary, state_pos, state_dim, param_dim=0):
+    super().__init__(koopman, state_dim, param_dim)
+    self._dictionary = dictionary
+    self._state_pos = state_pos
+
+  def step(self, x, u):
+    psi = self._dictionary(x)
+    return self._trans_func.step(psi, u)[:, self._state_pos]
 
 
 class KoopmanODEDynamics(DiscreteDynamics):
@@ -62,15 +72,3 @@ class KoopmanODEDynamics(DiscreteDynamics):
       x.append(self.step(state, u[i].unsqueeze(0)))
       state = self._ode.step(state, u[i].unsqueeze(0))
     return torch.stack(x, dim=1)  # size: (N, traj_len, number of state)
-
-
-class KoopmanStateDynamics(DiscreteDynamics):
-
-  def __init__(self, koopman, dictionary, state_pos, state_dim, param_dim=0):
-    super().__init__(koopman, state_dim, param_dim)
-    self._dictionary = dictionary
-    self._state_pos = state_pos
-
-  def step(self, x, u):
-    psi = self._dictionary(x)
-    return self._trans_func.step(psi, u)[:, self._state_pos]

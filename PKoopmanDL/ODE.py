@@ -7,29 +7,11 @@ from .Factory import *
 class AbstractODE:
 
   def __init__(self, dim, param_dim, rhs):
-    """
-    Initialize the AbstractODE instance.
-
-    Args:
-        dim (int): The dimension of the ODE.
-        param_dim (int): The dimension of the parameter.
-        rhs ((tensor, tensor) -> tensor): The right-hand side function of the ODE.
-    """
     self._dim = dim
     self._param_dim = param_dim
     self._rhs = rhs
 
   def rhs(self, x, u):
-    """
-    Computes the right-hand side function using the inputs `(x, u)`. If `_param_dim=0` then `u` will be ignored.
-
-    Args:
-        x (tensor): The state of the system.
-        u (tensor): The parameter of the system.
-
-    Returns:
-        tensor: The right-hand side of the ODE.
-    """
     return self._rhs(x, u)
 
   @property

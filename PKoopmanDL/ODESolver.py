@@ -8,11 +8,10 @@ from tqdm import tqdm
 from scipy.optimize import fsolve
 from .Factory import *
 from .Log import *
-from .Dynamics import TransitionFunction
 from . import Parallel
 
 
-class ODESolver(TransitionFunction):
+class ODESolver:
 
   def __init__(self, ode, t_step, dt=1e-3):
     self._ode = ode
@@ -88,7 +87,7 @@ class ScipyODESolver(ODESolver):
     else:
       param = u
     y_list = []
-    results = joblib.Parallel(n_jobs=Parallel.NJOBS)(
+    results = joblib.Parallel(n_jobs=Parallel.get_n_jobs())(
         joblib.delayed(solve_ivp)(i)
         for i in tqdm(range(x.size(0)), desc="Stepping...", leave=False))
     for result in results:

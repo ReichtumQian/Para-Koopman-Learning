@@ -1,9 +1,8 @@
 import numpy as np
 import torch
-from .Dynamics import TransitionFunction
 
 
-class Koopman(TransitionFunction):
+class Koopman:
 
   def __init__(self, K):
     """Initialize the Koopman instance.
@@ -30,7 +29,7 @@ class Koopman(TransitionFunction):
     self.__init__(K)
 
 
-class ParamKoopman(TransitionFunction):
+class ParamKoopman:
 
   def __init__(self, size_K, network):
     """Initialize the ParamKoopman instance.

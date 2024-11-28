@@ -3,7 +3,7 @@ import torch
 from .ControlSolver import *
 from .Dictionary import *
 from .Dynamics import *
-from .DynamicsDataSet import *
+from .KoopmanDataSet import *
 from .Koopman import *
 from .KoopmanSolver import *
 from .Log import *

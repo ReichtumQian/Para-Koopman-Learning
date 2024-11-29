@@ -21,8 +21,10 @@ class FullConnBaseNet(torch.nn.Module):
     self._input_layer = torch.nn.Linear(input_dim, layer_size[0], bias=False)
     # hidden layers
     self._hidden_layers = torch.nn.ModuleList()
+    self._batch_norms = torch.nn.ModuleList()
     for in_features, out_features in zip(layer_size[:-1], layer_size[1:]):
       self._hidden_layers.append(torch.nn.Linear(in_features, out_features))
+      self._batch_norms.append(torch.nn.BatchNorm1d(out_features))
     # output layer
     self._output_layer = torch.nn.Linear(layer_size[-1], output_dim)
     self._activation_type = activation
@@ -51,9 +53,11 @@ class FullConnResNet(FullConnBaseNet):
 
   def forward(self, inputs):
     hidden_u = self._input_layer(inputs)
-    for layer in self._hidden_layers:
+    for layer, batch_norm in zip(self._hidden_layers, self._batch_norms):
       residual = hidden_u
-      hidden_u = self._apply_activation(layer(hidden_u))
+      hidden_u = layer(hidden_u)
+      hidden_u = batch_norm(hidden_u)
+      hidden_u = self._apply_activation(hidden_u)
       hidden_u = hidden_u + residual
     return self._output_layer(hidden_u)
 
@@ -62,6 +66,8 @@ class FullConnNet(FullConnBaseNet):
 
   def forward(self, inputs):
     hidden_u = self._input_layer(inputs)
-    for layer in self._hidden_layers:
-      hidden_u = self._apply_activation(layer(hidden_u))
+    for layer, batch_norm in zip(self._hidden_layers, self._batch_norms):
+      hidden_u = layer(hidden_u)
+      hidden_u = batch_norm(hidden_u)
+      hidden_u = self._apply_activation(hidden_u)
     return self._output_layer(hidden_u)

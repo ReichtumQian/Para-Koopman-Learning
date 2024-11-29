@@ -92,6 +92,10 @@ class ParamKoopmanDataSet(KoopmanDataSet):
                     param_time_dependent=False):
     dim = self._dynamics.dim
     param_dim = self._dynamics.param_dim
+    if param_time_dependent and n_traj_per_param != 1:
+      raise RuntimeError(
+          "[ParamKoopmanDataSet] If param_time_dependent is True, n_traj_per_param should better be 1."
+      )
     info_message("[ParamKoopmanDataSet] Start generating data...")
     # generate x
     if isinstance(x_min, numbers.Number):

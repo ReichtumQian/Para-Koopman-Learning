@@ -31,13 +31,12 @@ def sample_func(row_size, col_size):
   return eta
 
 
-def nontrain_func(x):
-  one = torch.ones((x.size(0), 1))
+def observable_func(x):
   mass = torch.sum(x, dim=1, keepdim=True) * x_step
   momentum = torch.sum(x**2, dim=1, keepdim=True) * x_step
-  return torch.cat((one, mass, momentum), dim=1)
+  return torch.cat((mass, momentum), dim=1)
 
 
 # set up the solver
-solver.setup(nontrain_func, sample_func)
-solver.save_dataset("data/kdv_dataset1000.pt")
+solver.setup(observable_func, sample_func)
+solver.save_dataset("data/kdv_dataset.pt")

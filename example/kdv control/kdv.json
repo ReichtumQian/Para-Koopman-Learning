@@ -20,7 +20,6 @@
   },
   "dictionary": {
     "dim_output": 6,
-    "dim_nontrain": 3,
     "dic_layer_sizes": [16, 16]
   },
   "solver": {

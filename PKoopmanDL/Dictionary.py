@@ -5,9 +5,9 @@ import scipy
 
 class ObservableFunction:
 
-  def __init__(self, func, dim):
+  def __init__(self, func, dim_output):
     self._func = func
-    self._dim = dim
+    self._dim = dim_output
 
   @property
   def dim(self):
@@ -40,6 +40,7 @@ class TrainableDictionary(Dictionary):
 
   def __init__(self, network, observable_func, dim_input, dim_output):
     self._network = network
+    assert dim_output > observable_func.dim + 1, "dim_output must be greater than observable_func.dim + 1"
     function = lambda x: torch.cat(
         (observable_func(x).to(x.device), torch.ones(
             (x.size(0), 1)).to(x.device), self._network(x).to(x.device)),
@@ -65,6 +66,7 @@ class TrainableDictionary(Dictionary):
 class RBFDictionary(Dictionary):
 
   def __init__(self, data_x, observable_func, dim_input, dim_output, reg):
+    assert dim_output > observable_func.dim + 1, "dim_output must be greater than observable_func.dim + 1"
     dim_train = dim_output - observable_func.dim - 1
     # set the seed if you want to reproduce the same results
     # np.random.seed(0)

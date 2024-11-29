@@ -15,11 +15,11 @@
     "param_max": [1.0, 2.0, 2.0],
     "seed_x": 123,
     "seed_param": 22,
-    "train_ratio": 0.8
+    "train_ratio": 0.8,
+    "param_time_dependent": false
   },
   "dictionary": {
     "dim_output": 25,
-    "dim_nontrain": 3,
     "dic_layer_sizes": [100, 100, 100]
   },
   "solver": {

@@ -37,6 +37,9 @@ class DiscreteDynamics:
 
 
 class KoopmanDynamics(DiscreteDynamics):
+  """Koopman Dynamics of the form \\Psi_{n+1} = K \\Psi_n.
+     The states are updated from the dictionary's output
+  """
 
   def __init__(self, koopman, dictionary, state_pos, state_dim, param_dim=0):
     super().__init__(koopman, state_dim, param_dim)
@@ -49,12 +52,15 @@ class KoopmanDynamics(DiscreteDynamics):
 
 
 class KoopmanODEDynamics(DiscreteDynamics):
+  """Koopman Dynamics of the form \\Psi_{n+1} = K \Psi_n.
+     The states x are obtained from the ODESolver.
+  """
 
-  def __init__(self, ode, koopman, dictionary, state_dim, param_dim=0):
+  def __init__(self, ode_solver, koopman, dictionary, state_dim, param_dim=0):
     super().__init__(koopman, state_dim, param_dim)
     self._koopman = koopman
     self._dictionary = dictionary
-    self._ode = ode
+    self._ode = ode_solver
 
   def step(self, x, u):
     psi = self._dictionary(x)

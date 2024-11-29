@@ -9,7 +9,7 @@ class EDMDTester:
   def __init__(self,
                config_file,
                num_param,
-               nontrain_func,
+               observable_func,
                param_min,
                param_max,
                seed_param,
@@ -22,7 +22,7 @@ class EDMDTester:
     param_dim = len(tmp_solver.param)
     self._solvers = []
     self._params = []
-    self._nontrain_func = nontrain_func
+    self._observable_func = observable_func
     torch.manual_seed(seed_param)
     for _ in range(num_param):
       param = torch.rand(1, param_dim)
@@ -46,5 +46,5 @@ class EDMDTester:
 
   def solve(self, param):
     index = self._find_closest(param)
-    self._solvers[index].setup(self._nontrain_func)
+    self._solvers[index].setup(self._observable_func)
     return self._solvers[index].solve(), self._solvers[index].dictionary

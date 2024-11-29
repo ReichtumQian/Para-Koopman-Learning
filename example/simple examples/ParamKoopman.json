@@ -16,7 +16,7 @@
     "seed_x": 11,
     "seed_param": 22,
     "train_ratio": 0.8,
-    "param_time_dependent": true
+    "param_time_dependent": false
   },
   "dictionary": {
     "dim_output": 25,

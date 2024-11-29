@@ -32,22 +32,11 @@ class Koopman:
 class ParamKoopman:
 
   def __init__(self, size_K, network):
-    """Initialize the ParamKoopman instance.
-
-    Args:
-        network ((tensor) -> tensor): Given the parameters `u`, returns the generated Koopman operator matrix.
-    """
     self._size = size_K
     self._network = network
 
   def __call__(self, x, u):
     """Generate a Koopman operator based on the given parameters.
-
-    Args:
-        para (tensor): The parameter data, expected to be of shape (N, N_u).
-
-    Returns:
-        Koopman: The Koopman operator corresponding to the given parameters.
     """
     if u.size(0) == 1:
       net_param = u.expand(x.size(0), -1)

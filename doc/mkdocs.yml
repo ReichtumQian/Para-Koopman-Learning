@@ -76,6 +76,10 @@ nav:
   - User Guide:
     - Set up the Environment: "UserGuide/Setup.md"
     - Quick Start: "UserGuide/QuickStart.md"
+    - Input Guide: "UserGuide/InputGuide.md"
+    - Customize Observables: "UserGuide/CustomizeObservable.md"
+    - Customize ODE: "UserGuide/CustomizeODE.md"
+    - Customize ODE Solver: "UserGuide/CustomizeODESolver.md"
     - Parallel Computing: "UserGuide/Parallel.md"
   - Class References:
     - Dictionary:

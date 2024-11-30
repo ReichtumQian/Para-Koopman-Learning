@@ -8,7 +8,7 @@ We utilize `joblib` to take advantage of multiple cores of the CPU,
 primarily used to accelerate the process of solving ODEs with `Scipy`.
 To set or get the number of threads, use the following code:
 
-``` python
+```python
 import PKoopmanDL
 
 # get the number of threads

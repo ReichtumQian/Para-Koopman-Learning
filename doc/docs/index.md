@@ -12,9 +12,9 @@ A few examples are provided in the `example` folder of this repository.
 ## User Guide
 
 - **Customizing Input Parameters and Solver**: [[InputGuide.md | Input Guide]].
-- **Customizing Observable Functions**: [[CustomObservable.md | Custom Observable Guide]].
-- **Customizing ODE**: [[CustomODE.md | Custom ODE Guide]].
-- **Customizing ODE Solver**: [[CustomSolver.md | Custom ODE Solver Guide]].
+- **Customizing Observable Functions**: [[CustomizeObservable.md | Custom Observable Guide]].
+- **Customizing ODE**: [[CustomizeODE.md | Custom ODE Guide]].
+- **Customizing ODE Solver**: [[CustomizeSolver.md | Custom ODE Solver Guide]].
 - **Enhancing Performance with GPU and Multithreading**: [[Parallel.md | Parallel Computing Guide]].
 
 ## Class References

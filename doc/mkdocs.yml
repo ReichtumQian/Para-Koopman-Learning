@@ -8,6 +8,7 @@ theme:
     - navigation.instant
     - navigation.top
     - content.code.annotate
+    - content.code.copy
     # - navigation.expand
     # - navigation.tabs
   palette:
@@ -46,6 +47,13 @@ markdown_extensions:
   - pymdownx.keys
   - pymdownx.mark
   - pymdownx.tilde
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
   - md_in_html
   - toc:
       permalink: true

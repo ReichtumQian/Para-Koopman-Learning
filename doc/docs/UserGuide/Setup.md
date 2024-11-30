@@ -1,7 +1,7 @@
 
 You can follow these steps to set up an environment that uses the CPU:
 
-``` bash
+```bash
 git clone https://github.com/ReichtumQian/ParamKoopmanDL.git
 cd ParamKoopmanDL
 

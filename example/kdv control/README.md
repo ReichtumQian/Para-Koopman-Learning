@@ -30,7 +30,11 @@ $$
 
 Detailed descriptions and solving procedures can be found at [1].
 
+## Instructions for Running the Code
 
+- Create a `data` folder in the current directory.
+- Execute `generate_data.py` to generate the dataset.
+- Use the provided jupyter notebooks to train the model and solve the optimal control problem.
 
 ## References
 

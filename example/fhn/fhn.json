@@ -1,6 +1,6 @@
 {
   "equ_type": "fhn",
-  "flowmap": {
+  "ode_solver": {
     "type": "forward euler",
     "dt": 1e-5,
     "t_step": 1e-3

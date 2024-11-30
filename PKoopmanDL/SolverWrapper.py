@@ -16,7 +16,7 @@ class SolverWrapper:
     with open(config_file) as f:
       self._data = json.load(f)
     self._read_ode_config()
-    self._read_flowmap_config()
+    self._read_ode_solver_config()
     self._read_dataset_config()
     self._read_dictionary_config()
     self._read_solver_config()
@@ -26,7 +26,7 @@ class SolverWrapper:
             x_sample_func=torch.rand,
             param_sample_func=torch.rand):
     self._init_ode()
-    self._init_flowmap()
+    self._init_ode_solver()
     self._init_dataset(x_sample_func, param_sample_func)
     self._init_dictionary(observable_func)
     self._init_solver()
@@ -37,10 +37,10 @@ class SolverWrapper:
   def _read_ode_config(self):
     self.equ_type = self._data['equ_type']
 
-  def _read_flowmap_config(self):
-    self.flowmap_type = self._data['flowmap']['type']
-    self.dt = self._data['flowmap']['dt']
-    self.t_step = self._data['flowmap']['t_step']
+  def _read_ode_solver_config(self):
+    self.ode_solver_type = self._data['ode_solver']['type']
+    self.dt = self._data['ode_solver']['dt']
+    self.t_step = self._data['ode_solver']['t_step']
 
   def _read_dataset_config(self):
     self.n_traj = self._data['dataset']['n_traj']
@@ -78,9 +78,9 @@ class SolverWrapper:
   def _init_ode(self):
     self.ode = ODEFACTORY.create(self.equ_type)
 
-  def _init_flowmap(self):
-    self.flowmap = ODESOLVERFACTORY.create(self.flowmap_type, self.ode,
-                                           self.t_step, self.dt)
+  def _init_ode_solver(self):
+    self.ode_solver = ODESOLVERFACTORY.create(self.ode_solver_type, self.ode,
+                                              self.t_step, self.dt)
 
   def _init_dataset(self, x_sample_func, param_sample_func):
     return NotImplementedError
@@ -103,7 +103,7 @@ class EDMDRBFSolverWrapper(SolverWrapper):
     self.reg = self._data['dictionary']['reg']
 
   def _init_dataset(self, x_sample_func, param_sample_func):
-    self.dynamics = DiscreteDynamics(self.flowmap, self.ode.dim)
+    self.dynamics = DiscreteDynamics(self.ode_solver, self.ode.dim)
     self.dataset = KoopmanDataSet(self.dynamics, x_sample_func)
     self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min,
                                self.x_max, self.param, self.seed_x)
@@ -143,7 +143,7 @@ class EDMDDLSolverWrapper(SolverWrapper):
     self.dic_lr = self._data['solver']['dic_lr']
 
   def _init_dataset(self, x_sample_func, param_sample_func):
-    self.dynamics = DiscreteDynamics(self.flowmap, self.ode.dim)
+    self.dynamics = DiscreteDynamics(self.ode_solver, self.ode.dim)
     self.dataset = KoopmanDataSet(self.dynamics, x_sample_func)
     self.dataset.generate_data(self.n_traj, self.traj_len, self.x_min,
                                self.x_max, self.param, self.seed_x)
@@ -184,8 +184,8 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
                          x_sample_func=torch.rand,
                          param_sample_func=torch.rand):
     self._init_ode()
-    self._init_flowmap()
-    self.dynamics = DiscreteDynamics(self.flowmap, self.ode.dim,
+    self._init_ode_solver()
+    self.dynamics = DiscreteDynamics(self.ode_solver, self.ode.dim,
                                      self.ode.param_dim)
     self.dataset = ParamKoopmanDataSet(self.dynamics, x_sample_func,
                                        param_sample_func)
@@ -216,7 +216,7 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
     self.koopman_lr = self._data['solver']['koopman_lr']
 
   def _init_dataset(self, x_sample_func, param_sample_func):
-    self.dynamics = DiscreteDynamics(self.flowmap, self.ode.dim,
+    self.dynamics = DiscreteDynamics(self.ode_solver, self.ode.dim,
                                      self.ode.param_dim)
     self.dataset = ParamKoopmanDataSet(self.dynamics, x_sample_func,
                                        param_sample_func)

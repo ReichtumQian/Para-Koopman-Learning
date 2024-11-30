@@ -188,3 +188,7 @@ ODEFACTORY.register("Duffing", DuffingOscillator)
 ODEFACTORY.register("vdpm", VanderPolMathieu)
 ODEFACTORY.register("fhn", FitzHughNagumo)
 ODEFACTORY.register("kdv", KortewegDeVries)
+
+
+def registerODE(name, ode):
+  ODEFACTORY.register(name, ode)

@@ -3,16 +3,19 @@ Pytorch implementation of EDMDDL [1] and learning parametric Koopman decompositi
 
 ## Quick Start
 
-We highly recommend using `Anaconda` to manage the environment. If you have it installed, you can simply run:
+You can set up the environment and install this package by running the following commands:
 
 ``` bash
 git clone https://github.com/ReichtumQian/ParamKoopmanDL.git
 cd ParamKoopmanDL
-# Create a new environment
-conda create -n KoopmanDL python=3.8
+
+# (Optional) Create a new environment
+conda create -n KoopmanDL
 conda activate KoopmanDL
+
 # By default using CPU
 pip install -r requirements.txt
+pip install -e .
 ```
 
 ## References

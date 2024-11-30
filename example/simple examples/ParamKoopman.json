@@ -1,6 +1,6 @@
 {
   "equ_type": "Duffing",
-  "flowmap": {
+  "ode_solver": {
     "type": "forward euler",
     "dt": 1e-3,
     "t_step": 0.25

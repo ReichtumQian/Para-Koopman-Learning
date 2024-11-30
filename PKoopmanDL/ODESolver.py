@@ -118,3 +118,7 @@ ODESOLVERFACTORY.register("backward euler", BackwardEuler)
 ODESOLVERFACTORY.register("rk4", RungeKutta4)
 ODESOLVERFACTORY.register("rk23", RungeKutta23)
 ODESOLVERFACTORY.register("rk45", RungeKutta45)
+
+
+def registerODESolver(name, solver):
+  ODESOLVERFACTORY.register(name, solver)

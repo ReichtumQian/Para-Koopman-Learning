@@ -8,5 +8,9 @@ def set_device(device):
   DEVICE = device
 
 
+def print_device():
+  print(DEVICE)
+
+
 if __name__ == "__main__":
   print(DEVICE)

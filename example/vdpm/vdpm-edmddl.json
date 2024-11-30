@@ -1,6 +1,6 @@
 {
   "equ_type": "vdpm",
-  "flowmap": {
+  "ode_solver": {
     "type": "forward euler",
     "dt": 1e-3,
     "t_step": 1e-2

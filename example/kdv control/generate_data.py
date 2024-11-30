@@ -31,13 +31,13 @@ def sample_func(row_size, col_size):
   return eta
 
 
-def tmp_func(x):
+def mass_momentum_func(x):
   mass = torch.sum(x, dim=1, keepdim=True) * x_step
   momentum = torch.sum(x**2, dim=1, keepdim=True) * x_step
   return torch.cat((mass, momentum), dim=1)
 
 
-observable_func = pkdl.ObservableFunction(tmp_func, 2)
+observable_func = pkdl.ObservableFunction(mass_momentum_func, 2)
 
 # set up the solver
 solver.setup(observable_func, sample_func)

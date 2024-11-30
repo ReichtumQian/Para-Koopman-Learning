@@ -1,6 +1,7 @@
 import torch
 
 from .ControlSolver import *
+from .Device import *
 from .Dictionary import *
 from .Dynamics import *
 from .KoopmanDataSet import *
@@ -13,6 +14,6 @@ from .Parallel import *
 from .SolverWrapper import *
 
 if torch.cuda.is_available():
-  info_message("CUDA is available. GPU is being used.")
+  debug_message("CUDA is available. GPU is being used.")
 else:
-  info_message("CUDA is not available. Using CPU for computation.")
+  debug_message("CUDA is not available. Using CPU for computation.")

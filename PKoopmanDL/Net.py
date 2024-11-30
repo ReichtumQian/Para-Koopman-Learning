@@ -8,7 +8,7 @@ class FullConnBaseNet(torch.nn.Module):
                output_dim=1,
                layer_size=[64, 64],
                activation='tanh',
-               normalize_input=True):
+               normalize_input=False):
     """ Initialize the FullConnResNet instance.
 
     Args:

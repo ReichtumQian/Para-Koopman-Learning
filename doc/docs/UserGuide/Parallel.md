@@ -25,5 +25,5 @@ PKoopmanDL.set_n_jobs(-1)
 
 CUDA is employed to accelerate neural network training,
 supported by `pytorch`.
-We use `torch.cuda` to manage the GPU resources,
-and relevant information is displayed when the package is loaded.
+We use `torch.cuda` to manage the GPU resources.
+You can use `PKoopmanDL.print_device()` to check the current device.

@@ -34,7 +34,12 @@ class KoopmanMPCSolver:
 
     self._loss_func = loss_func
 
-  def solve(self, state0, control_min, control_max, method='powell'):
+  def solve(self,
+            state0,
+            control_min,
+            control_max,
+            method='powell',
+            disp=False):
     if isinstance(control_min, numbers.Number):
       control_min = [control_min] * self._dynamics.param_dim
     if isinstance(control_max, numbers.Number):
@@ -67,9 +72,6 @@ class KoopmanMPCSolver:
           "The reference trajectory is smaller than or equal to the time horizon!"
       )
     pbar = tqdm(range(traj_len - tau), desc="Solving")
-    disp = False
-    if debug_level():
-      disp = True
     for t in pbar:
       results = scipy.optimize.minimize(self._loss_func,
                                         x0=control_init,

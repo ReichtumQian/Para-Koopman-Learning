@@ -29,7 +29,7 @@ class DuffingOscillator(AbstractODE):
     dim = 2
     param_dim = 3
 
-    def rhs(self, x, u):
+    def rhs(x, u):
       # u = (delta, beta, alpha)
       param = u
       data_size = x.size(0)
@@ -57,7 +57,7 @@ class VanderPolMathieu(AbstractODE):
     k3 = 1
     w0 = 1
 
-    def rhs(self, x, u):
+    def rhs(x, u):
       # u = (mu, u)
       param = u
       data_size = x.size(0)
@@ -97,7 +97,7 @@ class FitzHughNagumo(AbstractODE):
     k2 = 0
     k3 = 5
 
-    def rhs(self, vw, u):
+    def rhs(vw, u):
       param = u
       data_size = vw.size(0)
       if u.size(0) == 1:
@@ -150,7 +150,7 @@ class KortewegDeVries(AbstractODE):
     v2 = lambda x: torch.exp(-25 * (x - c2)**2)
     v3 = lambda x: torch.exp(-25 * (x - c3)**2)
 
-    def rhs(self, y, u):
+    def rhs(y, u):
       param = u
       data_size = y.size(0)
       if u.size(0) == 1:

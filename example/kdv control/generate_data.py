@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import torch
 
-pkdl.set_n_jobs(32)
+pkdl.set_n_jobs(-1)
 
 # read the config file
 config_file = "kdv.json"
@@ -31,11 +31,13 @@ def sample_func(row_size, col_size):
   return eta
 
 
-def observable_func(x):
+def tmp_func(x):
   mass = torch.sum(x, dim=1, keepdim=True) * x_step
   momentum = torch.sum(x**2, dim=1, keepdim=True) * x_step
   return torch.cat((mass, momentum), dim=1)
 
+
+observable_func = pkdl.ObservableFunction(tmp_func, 2)
 
 # set up the solver
 solver.setup(observable_func, sample_func)

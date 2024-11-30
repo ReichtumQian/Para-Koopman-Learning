@@ -13,6 +13,6 @@ from .Parallel import *
 from .SolverWrapper import *
 
 if torch.cuda.is_available():
-  debug_message("CUDA is available. GPU is being used.")
+  info_message("CUDA is available. GPU is being used.")
 else:
-  debug_message("CUDA is not available. Using CPU for computation.")
+  info_message("CUDA is not available. Using CPU for computation.")

@@ -74,16 +74,9 @@ extra_css:
 nav:
   - Home: "index.md"
   - User Guide:
-    - Set up the Environment: "UserGuide/SetUp.md"
+    - Set up the Environment: "UserGuide/Setup.md"
     - Quick Start: "UserGuide/QuickStart.md"
-  - Mathematics:
-    - Parametric Koopman: "Mathematics/ParamKoopman.md"
-    - EDMD Algorithm: "Mathematics/EDMD.md"
-    - Optimal Control: "Mathematics/OptimalControl.md"
-    - Examples:
-      - Duffing Equation: "Mathematics/Duffing.md"
-      - Van der Pol Mathieu: "Mathematics/VanDerPolMathieu.md"
-      - Korteweg-De Vries: "Mathematics/KortewegDeVries.md"
+    - Parallel Computing: "UserGuide/Parallel.md"
   - Class References:
     - Dictionary:
       - Class Dictionary: "ClassReferences/Dictionary.md"

@@ -3,7 +3,7 @@
 
 In this example, we apply our method to control the forced Korteweg-De Vries (KdV) equation
 
-$$ \frac{\partial \eta(t, x)}{\partial t} + \eta(t, x) + \frac{\partial \eta(t, x)}{\partial x} + \frac{\partial^{3} \eta(t, x)}{\partial x^{3}}. $$
+$$ \frac{\partial \eta(t, x)}{\partial t} + \eta(t, x) + \frac{\partial \eta(t, x)}{\partial x} + \frac{\partial^{3} \eta(t, x)}{\partial x^{3}} = w(t,x). $$
 
 The optimal control problem is
 

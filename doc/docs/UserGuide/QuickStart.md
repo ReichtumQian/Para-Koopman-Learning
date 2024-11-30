@@ -5,7 +5,10 @@ We provide three simple examples using the EDMD algorithm, the EDMDDL algorithm 
 Each example consists of a JSON file and a jupyter notebook. 
 Let's consider the parametric Koopman learning algorithm as an example.
 
-## Train the Parametric Koopman Operator
+## Training the Parametric Koopman Operator
+
+As written in the notebook,
+the training process contains the following lines:
 
 ```python
 import PKoopmanDL as pkdl
@@ -39,7 +42,7 @@ functions are included in the dictionary,
 the Koopman operator can be used to predict the state
 through the sequence
 
-$$ x_n \rightarrow \Psi_n \rightarrow \Psi_{n+1} \rightarrow x_{n+1}. $$
+$$ x_n \rightarrow \Psi_n \xrightarrow{\mathcal{K}} \Psi_{n+1} \rightarrow x_{n+1}. $$
 
 To facilitate this process,
 we have designed a dedicated class [[KoopmanDynamics.md | KoopmanDynamics]].

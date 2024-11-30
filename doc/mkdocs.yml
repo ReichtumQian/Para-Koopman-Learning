@@ -96,7 +96,7 @@ nav:
     - Koopman Operator:
       - Class Koopman: "ClassReferences/Koopman.md"
       - Class ParamKoopman: "ClassReferences/ParamKoopman.md"
-    - Solver:
+    - Koopman Solver:
       - Class EDMDSolver: "ClassReferences/EDMDSolver.md"
       - Class EDMDDLSolver: "ClassReferences/EDMDDLSolver.md"
       - Class ParamKoopmanDLSolver: "ClassReferences/ParamKoopmanDLSolver.md"
@@ -104,8 +104,8 @@ nav:
       - Class AbstractODE: "ClassReferences/AbstractODE.md"
       - Class DuffingOscillator: "ClassReferences/DuffingOscillator.md"
       - Class VanDerPolOscillator: "ClassReferences/VanDerPolOscillator.md"
-    - Flow Map:
-      - Class FlowMap: "ClassReferences/FlowMap.md"
+    - ODE Solvers:
+      - Class FlowMap: "ClassReferences/ODESolver.md"
       - Class ForwardEuler: "ClassReferences/ForwardEuler.md"
     - Data Management:
       - Class ODEDataSet: "ClassReferences/ODEDataSet.md"

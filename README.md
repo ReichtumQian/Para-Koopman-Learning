@@ -15,7 +15,7 @@ conda activate KoopmanDL
 
 # By default using CPU
 pip install -r requirements.txt
-pip install -e .
+pip install .
 ```
 
 ## References

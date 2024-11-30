@@ -120,5 +120,5 @@ ODESOLVERFACTORY.register("rk23", RungeKutta23)
 ODESOLVERFACTORY.register("rk45", RungeKutta45)
 
 
-def registerODESolver(name, solver):
+def register_ode_solver(name, solver):
   ODESOLVERFACTORY.register(name, solver)

@@ -29,6 +29,7 @@ Most of the symbols in this documentation can be found at [2].
 - ODE Solver: [[ODESolver.md | ODESolver]].
 - Data Management: [[KoopmanDataSet.md | KoopmanDataSet]], [[ParamKoopmanDataSet.md | ParamKoopmanDataSet]].
 - Neural Network: [[FullConnBaseNet.md | FullConnBaseNet]], [[FullConnNet.md | FullConnNet]], [[FullConnResNet.md | FullConnResNet]].
+- Control Solver: [[KoopmanMPCSolver.md | KoopmanMPCSolver]].
 
 
 ## References

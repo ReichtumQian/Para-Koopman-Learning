@@ -10,6 +10,17 @@ class KoopmanMPCSolver:
 
   def __init__(self, dynamics, koopman, dictionary, ref_traj, time_horizon,
                observable_pos, lambda_param):
+    """Initializes an instance of the KoopmanMPCSolver class.
+
+    Args:
+        dynamics (KoopmanDynamics): The Koopman dynamics system.
+        koopman (ParamKoopman): The parametric Koopman operator.
+        dictionary (TrainableDictionary or Dictionary): A function that maps the state to the dictionary of observables.
+        ref_traj (torch.Tensor): A tensor containing the reference trajectory, with shape (trajectory_length, state_dimension).
+        time_horizon (int): The time horizon for model predictive control.
+        observable_pos (int): The position(s) of target observables in dictionary.
+        lambda_param (float): A regularization parameter used to balance the control error and tracking error.
+    """
 
     self._time_horizon = time_horizon
     self._ref_traj = ref_traj
@@ -40,6 +51,17 @@ class KoopmanMPCSolver:
             control_max,
             method='powell',
             disp=False):
+    """Solve the optimal control problem for a given initial state and control bounds.
+    Args:
+        state0 (torch.Tensor): The initial state of the system.
+        control_min (float or list of floats): Minimum allowable value(s) for the control input(s).
+        control_max (float or list of floats): Maximum allowable value(s) for the control input(s).
+        method (str, optional): Optimization method to use. Defaults to 'powell'.
+        disp (bool, optional): Whether to print convergence messages. Defaults to False.
+
+    Returns:
+        torch.Tensor: The optimal control sequence over the given time horizon.
+    """
     if isinstance(control_min, numbers.Number):
       control_min = [control_min] * self._dynamics.param_dim
     if isinstance(control_max, numbers.Number):

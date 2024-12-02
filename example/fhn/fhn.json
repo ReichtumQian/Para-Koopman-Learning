@@ -20,14 +20,14 @@
   },
   "dictionary": {
     "dim_output": 51,
-    "dic_layer_sizes": [128, 128]
+    "dic_layer_sizes": [128, 128, 128]
   },
   "solver": {
-    "n_epochs": 1000,
-    "batch_size": 1000,
+    "n_epochs": 500,
+    "batch_size": 500,
     "tol": 1e-9,
     "dic_lr": 1e-4,
-    "koopman_layer_sizes": [256, 256],
+    "koopman_layer_sizes": [256, 128, 256],
     "koopman_lr": 1e-4
   }
 }

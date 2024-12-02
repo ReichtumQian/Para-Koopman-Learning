@@ -111,7 +111,7 @@ class KoopmanDynamics(DiscreteDynamics):
 
 
 class KoopmanODEDynamics(DiscreteDynamics):
-  """Koopman Dynamics of the form \\Psi_{n+1} = K \Psi_n.
+  """Koopman Dynamics of the form $\\Psi_{n+1} = K \\Psi_n$.
      The states x are obtained from the ODESolver.
   """
 

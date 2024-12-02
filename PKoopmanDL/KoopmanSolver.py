@@ -152,7 +152,8 @@ class ParamKoopmanDLSolver:
             batch_size,
             tol=1e-6,
             lr_dic=1e-4,
-            lr_koop=1e-4):
+            lr_koop=1e-4,
+            weight=None):
     """Solves the ParamKoopmanDL problem using the provided datasets and parameters.
 
     Args:
@@ -170,12 +171,15 @@ class ParamKoopmanDLSolver:
     """
     info_message("[ParamKoopmanDLSolver] Solving...")
     # normalize the dataset
-    max_value = dataset_train.dataset.labels.max()
-    min_value = dataset_train.dataset.labels.min()
+    if weight == None:
+      weight = torch.ones(1, paramkoopman.size)
+    else:
+      assert weight.size(0) == 1
+      assert weight.size(1) == paramkoopman.size
 
-    def normalize(data):
-      data = (data - min_value) / (max_value - min_value + 1e-7)
-      return data
+    def apply_weight(data):
+      weight_tmp = weight.expand(data.size(0), -1)
+      return data * weight_tmp
 
     dataloader_train = torch.utils.data.DataLoader(dataset_train,
                                                    batch_size=batch_size,
@@ -197,9 +201,11 @@ class ParamKoopmanDLSolver:
         opt_koopman.zero_grad()
         X = self._dictionary(data_x)
         X = paramkoopman(X, data_param)
-        X = normalize(X).to(DEVICE)
+        X = apply_weight(X)
+        X = X.to(DEVICE)
         Y = self._dictionary(labels)
-        Y = normalize(Y).to(DEVICE)
+        Y = apply_weight(Y)
+        Y = Y.to(DEVICE)
         if debug_level():
           error = torch.max(torch.abs(X - Y))
           debug_message(f"Train Max Error: {error:.2e}")

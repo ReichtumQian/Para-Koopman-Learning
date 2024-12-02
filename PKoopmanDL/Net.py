@@ -48,10 +48,10 @@ class FullConnBaseNet(torch.nn.Module):
     """Apply the network to the input `inputs`
 
     Args:
-        inputs (tensor): The input $\mathbb{R}^{N \\times N_x}$.
+        inputs (tensor): The input $\\mathbb{R}^{N \\times N_x}$.
 
     Returns:
-        tensor: The output $\mathbb{R}^{N \\times N_y}$.
+        tensor: The output $\\mathbb{R}^{N \\times N_y}$.
     """
     raise NotImplementedError
 

@@ -142,3 +142,12 @@ class ParamKoopman:
     data_loaded = torch.load(path)
     self._size = data_loaded['size']
     self._network.load_state_dict(data_loaded['state_dict'])
+
+  @property
+  def size(self):
+    """Returns the size of the Koopman matrix.
+
+    Returns:
+      int: The row/column size of the Koopman matrix.
+    """
+    return self._size

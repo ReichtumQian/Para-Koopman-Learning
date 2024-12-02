@@ -309,7 +309,7 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
                           self.koopman_layer_sizes)
     self.K = ParamKoopman(self.dim_output, network)
 
-  def solve(self):
+  def solve(self, weight=None):
     """Applies the parametric Koopman learning algorithm.
 
     Returns:
@@ -317,4 +317,4 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
     """
     return self.solver.solve(self.train_dataset, self.val_dataset, self.K,
                              self.n_epochs, self.batch_size, self.tol,
-                             self.dic_lr, self.koopman_lr)
+                             self.dic_lr, self.koopman_lr, weight)

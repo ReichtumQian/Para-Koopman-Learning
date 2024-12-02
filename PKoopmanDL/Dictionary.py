@@ -92,7 +92,7 @@ class TrainableDictionary(Dictionary):
       dim_output (int): Output dimension $N_\\psi$.
       
     Notes:
-      The constant observable function $\mathbf{1}$ is included in the `TrainableDictionary` by default, so users don't need to define it explicitly.
+      The constant observable function $\\mathbf{1}$ is included in the `TrainableDictionary` by default, so users don't need to define it explicitly.
     
     """
     self._network = network

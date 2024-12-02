@@ -18,6 +18,8 @@ pip install -r requirements.txt
 pip install .
 ```
 
+You can check out the [Quick Start](https://reichtumqian.github.io/ParamKoopmanDL/UserGuide/QuickStart/) and examples in the `example` folder for more details.
+
 ## References
 
 [1] [Li, Q., Dietrich, F., Bollt, E. M., & Kevrekidis, I. G. (2017). Extended dynamic mode decomposition with dictionary learning: A data-driven adaptive spectral decomposition of the Koopman operator. Chaos: An Interdisciplinary Journal of Nonlinear Science, 27(10), 103111.](https://aip-scitation-org.libproxy1.nus.edu.sg/doi/full/10.1063/1.4993854)

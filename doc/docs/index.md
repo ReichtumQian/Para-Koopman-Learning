@@ -1,7 +1,7 @@
 
 This repo implements the EDMD algorithm, EDMDDL algorithm [1] and the learning of parametric Koopman decomposition [2].
 
-## Get Started
+## Getting Started
 
 To set up the environment, please refer to [[SetUp.md | Set up the environment]].
 This repository is designed to be user-friendly.
@@ -22,10 +22,10 @@ A few examples are provided in the `example` folder of this repository.
 Most of the symbols in this documentation can be found at [2].
 
 - Dictionary: [[ObservableFunction.md | ObservableFunction]], [[Dictionary.md | Dictionary]], [[TrainableDictionary.md | TrainableDictionary]], [[RBFDictionary.md | RBFDictionary]].
-- Koopman Operator: [[Koopman.md | Koopman]], [[ParamKoopman.md | ParamKoopman]].
-- Solver: [[EDMDSolver.md | EDMDSolver]], [[EDMDDLSolver.md | EDMDDLSolver]], [[ParamKoopmanDLSolver.md | ParamKoopmanDLSolver]].
+- Koopman Operator: [[Koopman.md | Koopman]], [[ParamKoopman.md | ParamKoopman]], [[KoopmanDynamics.md | KoopmanDynamics]].
+- Solver: [[EDMDSolver.md | EDMDSolver]], [[EDMDDLSolver.md | EDMDDLSolver]], [[ParamKoopmanDLSolver.md | ParamKoopmanDLSolver]], [[KoopmanDynamics.md | KoopmanDynamics]].
 - SolverWrapper: [[SolverWrapper.md | SolverWrapper]], [[EDMDRBFSolverWrapper.md | EDMDRBFSolverWrapper]], [[EDMDDLSolverWrapper.md | EDMDDLSolverWrapper]], [[ParamKoopmanDLSolverWrapper.md | ParamKoopmanDLSolverWrapper]].
-- ODEs: [[AbstractODE.md | AbstractODE]].
+- ODEs: [[AbstractODE.md | AbstractODE]], [[DiscreteDynamics.md | DiscreteDynamics]].
 - ODE Solver: [[ODESolver.md | ODESolver]].
 - Data Management: [[KoopmanDataSet.md | KoopmanDataSet]], [[ParamKoopmanDataSet.md | ParamKoopmanDataSet]].
 - Neural Network: [[FullConnBaseNet.md | FullConnBaseNet]], [[FullConnNet.md | FullConnNet]], [[FullConnResNet.md | FullConnResNet]].

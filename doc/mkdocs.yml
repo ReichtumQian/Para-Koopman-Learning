@@ -100,13 +100,14 @@ nav:
     - Parallel Computing: "UserGuide/Parallel.md"
   - Class References:
     - Dictionary:
+      - Class ObservableFunction: "ClassReferences/ObservableFunction.md"
       - Class Dictionary: "ClassReferences/Dictionary.md"
       - Class TrainableDictionary: "ClassReferences/TrainableDictionary.md"
       - Class RBFDictionary: "ClassReferences/RBFDictionary.md"
-      - Class ObservableFunction: "ClassReferences/ObservableFunction.md"
     - Koopman Operator:
       - Class Koopman: "ClassReferences/Koopman.md"
       - Class ParamKoopman: "ClassReferences/ParamKoopman.md"
+      - Class KoopmanDynamics: "ClassReferences/KoopmanDynamics.md"
     - Koopman Solver:
       - Class EDMDSolver: "ClassReferences/EDMDSolver.md"
       - Class EDMDDLSolver: "ClassReferences/EDMDDLSolver.md"
@@ -118,6 +119,7 @@ nav:
       - Class ParamKoopmanDLSolverWrapper: "ClassReferences/ParamKoopmanDLSolverWrapper.md"
     - ODEs:
       - Class AbstractODE: "ClassReferences/AbstractODE.md"
+      - Class DiscreteDynamics: "ClassReferences/DiscreteDynamics.md"
     - ODE Solvers:
       - Class ODESolver: "ClassReferences/ODESolver.md"
     - Data Management:

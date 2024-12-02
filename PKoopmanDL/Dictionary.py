@@ -86,10 +86,14 @@ class TrainableDictionary(Dictionary):
     """A trainable dictionary
 
     Args:
-        network (torch.nn.Module): The trainable network.
-        observable_func (torch.Tensor -> torch.Tensor): Observable functions $(N, N_x) \\rightarrow (N, N_{\\psi})$
-        dim_input (int): Input dimension $N_x$.
-        dim_output (int): Output dimension $N_\\psi$.
+      network (torch.nn.Module): The trainable network.
+      observable_func (torch.Tensor -> torch.Tensor): Observable functions $(N, N_x) \\rightarrow (N, N_{\\psi})$
+      dim_input (int): Input dimension $N_x$.
+      dim_output (int): Output dimension $N_\\psi$.
+      
+    Notes:
+      The constant observable function $\mathbf{1}$ is included in the `TrainableDictionary` by default, so users don't need to define it explicitly.
+    
     """
     self._network = network
     assert dim_output > observable_func.dim + 1, "dim_output must be greater than observable_func.dim + 1"

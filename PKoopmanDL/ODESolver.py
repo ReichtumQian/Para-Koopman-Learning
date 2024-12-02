@@ -15,13 +15,12 @@ class ODESolver:
 
   def __init__(self, ode, t_step, dt=1e-3):
     """
-    Initializes the ODESolver with the given ordinary differential equation (ODE), 
-    time step, and optional time increment.
+    Initializes the ODESolver with the given ordinary differential equation (ODE), time step, and optional time increment.
 
     Args:
       ode (AbstractODE): The ordinary differential equation to be solved.
       t_step (float): The time step for the solver.
-      dt (float, optional): The time increment for each step. Defaults to 1e-3.
+      dt (float): The time increment for each step. Defaults to 1e-3.
     """
     self._ode = ode
     self._t_step = t_step
@@ -31,7 +30,7 @@ class ODESolver:
     """Perform a single step of the ODE solver.
 
     Args:
-      x (torch.Tensor) : The current state of the system.
+      x (torch.Tensor): The current state of the system.
       u (torch.Tensor): The control input or parameters on the system.
 
     Returns:

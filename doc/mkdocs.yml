@@ -62,6 +62,17 @@ plugins:
   - search
   - roamlinks 
   - mermaid2
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            heading_level: 3
+            show_source: false
+            show_bases: true
+            docstring_options: 
+              returns_named_value: false
+            
   # - section-index
   # - mkpdfs
 
@@ -100,16 +111,19 @@ nav:
       - Class EDMDSolver: "ClassReferences/EDMDSolver.md"
       - Class EDMDDLSolver: "ClassReferences/EDMDDLSolver.md"
       - Class ParamKoopmanDLSolver: "ClassReferences/ParamKoopmanDLSolver.md"
+    - SolverWrapper:
+      - Class SolverWrapper: "ClassReferences/SolverWrapper.md"
+      - Class EDMDRBFSolverWrapper: "ClassReferences/EDMDRBFSolverWrapper.md"
+      - Class EDMDDLSolverWrapper: "ClassReferences/EDMDDLSolverWrapper.md"
+      - Class ParamKoopmanDLSolverWrapper: "ClassReferences/ParamKoopmanDLSolverWrapper.md"
+      
     - ODEs:
       - Class AbstractODE: "ClassReferences/AbstractODE.md"
-      - Class DuffingOscillator: "ClassReferences/DuffingOscillator.md"
-      - Class VanDerPolOscillator: "ClassReferences/VanDerPolOscillator.md"
     - ODE Solvers:
-      - Class FlowMap: "ClassReferences/ODESolver.md"
-      - Class ForwardEuler: "ClassReferences/ForwardEuler.md"
+      - Class ODESolver: "ClassReferences/ODESolver.md"
     - Data Management:
-      - Class ODEDataSet: "ClassReferences/ODEDataSet.md"
-      - Class ParamODEDataSet: "ClassReferences/ParamODEDataSet.md"
+      - Class KoopmanDataSet: "ClassReferences/KoopmanDataSet.md"
+      - Class ParamKoopmanDataSet: "ClassReferences/ParamKoopmanDataSet.md"
     - Neural Network:
       - Class FullConnBaseNet: "ClassReferences/FullConnBaseNet.md"
       - Class FullConnNet: "ClassReferences/FullConnNet.md"

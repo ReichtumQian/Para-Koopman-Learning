@@ -20,7 +20,7 @@ class EDMDSolver:
     """Applies the EDMD algorithm to compute the Koopman operator.
 
     Args:
-        dataset (ODEDataSet): The dataset containing state and label data.
+        dataset (KoopmanDataSet): The dataset containing state and label data.
 
     Returns:
         Koopman: The Koopman operator as a linear mapping function.
@@ -43,7 +43,8 @@ class EDMDDLSolver(EDMDSolver):
     
     Args:
         dictionary (TrainableDictionary): The dictionary used in the algorithm.
-        regularizer (float): The regularization parameter used in the algorithm.
+        reg (float): The regularization parameter used in the algorithm.
+        reg_final (float): The final regularization parameter used in the algorithm.
     """
     super().__init__(dictionary)
     self._reg = reg
@@ -56,6 +57,19 @@ class EDMDDLSolver(EDMDSolver):
             batch_size,
             tol=1e-8,
             lr=1e-4):
+    """ Solves the Koopman operator learning problem using the provided training and validation datasets.
+
+    Args:
+      dataset_train (KoopmanDataset): The training dataset containing input data and labels.
+      dataset_val (KoopmanDataset): The validation dataset containing input data and labels.
+      n_epochs (int): The number of epochs to train the model.
+      batch_size (int): The size of each batch for training and validation.
+      tol (float): The tolerance for early stopping based on training loss. Defaults to 1e-8.
+      lr (float): The learning rate for the optimizer. Defaults to 1e-4.
+
+    Returns:
+      Koopman: The learned Koopman operator.
+    """
 
     def compute_K(data_x, labels, reg):
       X = self._dictionary(data_x).t()
@@ -123,6 +137,11 @@ class EDMDDLSolver(EDMDSolver):
 class ParamKoopmanDLSolver:
 
   def __init__(self, dictionary):
+    """Initializes the KoopmanSolver with a given dictionary.
+
+    Args:
+      dictionary (TrainableDictionary): A dictionary containing configuration or parameters for the Koopman solver.
+    """
     self._dictionary = dictionary
 
   def solve(self,
@@ -134,7 +153,30 @@ class ParamKoopmanDLSolver:
             tol=1e-6,
             lr_dic=1e-4,
             lr_koop=1e-4):
+    """Solves the ParamKoopmanDL problem using the provided datasets and parameters.
+
+    Args:
+      dataset_train (KoopmanDataset): The training dataset.
+      dataset_val (KoopmanDataset): The validation dataset.
+      paramkoopman (ParamKoopman): The parameterized Koopman operator model.
+      n_epochs (int): The number of epochs to train the model.
+      batch_size (int): The batch size for training and validation.
+      tol (float): The tolerance for early stopping based on training loss. Default is 1e-6.
+      lr_dic (float): The learning rate for the dictionary optimizer. Default is 1e-4.
+      lr_koop (float): The learning rate for the Koopman optimizer. Default is 1e-4.
+
+    Returns:
+      ParamKoopman: The trained parameterized Koopman operator model.
+    """
     info_message("[ParamKoopmanDLSolver] Solving...")
+    # normalize the dataset
+    max_value = dataset_train.dataset.labels.max()
+    min_value = dataset_train.dataset.labels.min()
+
+    def normalize(data):
+      data = (data - min_value) / (max_value - min_value + 1e-7)
+      return data
+
     dataloader_train = torch.utils.data.DataLoader(dataset_train,
                                                    batch_size=batch_size,
                                                    shuffle=True)
@@ -154,8 +196,10 @@ class ParamKoopmanDLSolver:
         opt_dictionary.zero_grad()
         opt_koopman.zero_grad()
         X = self._dictionary(data_x)
-        X = paramkoopman(X, data_param).to(DEVICE)
-        Y = self._dictionary(labels).to(DEVICE)
+        X = paramkoopman(X, data_param)
+        X = normalize(X).to(DEVICE)
+        Y = self._dictionary(labels)
+        Y = normalize(Y).to(DEVICE)
         if debug_level():
           error = torch.max(torch.abs(X - Y))
           debug_message(f"Train Max Error: {error:.2e}")

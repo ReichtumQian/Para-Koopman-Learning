@@ -21,17 +21,18 @@ A few examples are provided in the `example` folder of this repository.
 
 Most of the symbols in this documentation can be found at [2].
 
-- Dictionary: [[Dictionary.md | Dictionary]], [[TrainableDictionary.md | TrainableDictionary]], [[RBFDictionary.md | RBFDictionary]].
+- Dictionary: [[ObservableFunction.md | ObservableFunction]], [[Dictionary.md | Dictionary]], [[TrainableDictionary.md | TrainableDictionary]], [[RBFDictionary.md | RBFDictionary]].
 - Koopman Operator: [[Koopman.md | Koopman]], [[ParamKoopman.md | ParamKoopman]].
 - Solver: [[EDMDSolver.md | EDMDSolver]], [[EDMDDLSolver.md | EDMDDLSolver]], [[ParamKoopmanDLSolver.md | ParamKoopmanDLSolver]].
-- ODEs: [[AbstractODE.md | AbstractODE]], [[DuffingOscillator.md | DuffingOscillator]], [[VanDerPolOscillator.md | VanDerPolOscillator]].
-- ODE Solver: [[FlowMap.md | FlowMap]], [[ForwardEuler.md | ForwardEuler]].
-- Data Management: [[ODEDataSet.md | ODEDataSet]], [[ParamODEDataSet.md | ParamODEDataSet]].
+- SolverWrapper: [[SolverWrapper.md | SolverWrapper]], [[EDMDRBFSolverWrapper.md | EDMDRBFSolverWrapper]], [[EDMDDLSolverWrapper.md | EDMDDLSolverWrapper]], [[ParamKoopmanDLSolverWrapper.md | ParamKoopmanDLSolverWrapper]].
+- ODEs: [[AbstractODE.md | AbstractODE]].
+- ODE Solver: [[ODESolver.md | ODESolver]].
+- Data Management: [[KoopmanDataSet.md | KoopmanDataSet]], [[ParamKoopmanDataSet.md | ParamKoopmanDataSet]].
 - Neural Network: [[FullConnBaseNet.md | FullConnBaseNet]], [[FullConnNet.md | FullConnNet]], [[FullConnResNet.md | FullConnResNet]].
 
 
 ## References
 
-[1] [Li, Q., Dietrich, F., Bollt, E. M., & Kevrekidis, I. G. (2017). Extended dynamic mode decomposition with dictionary learning: A data-driven adaptive spectral decomposition of the Koopman operator. Chaos: An Interdisciplinary Journal of Nonlinear Science, 27(10), 103111.](https://aip-scitation-org.libproxy1.nus.edu.sg/doi/full/10.1063/1.4993854)
+[1]: [Li, Q., Dietrich, F., Bollt, E. M., & Kevrekidis, I. G. (2017). Extended dynamic mode decomposition with dictionary learning: A data-driven adaptive spectral decomposition of the Koopman operator. Chaos: An Interdisciplinary Journal of Nonlinear Science, 27(10), 103111.](https://aip-scitation-org.libproxy1.nus.edu.sg/doi/full/10.1063/1.4993854)
 
-[2] [Guo, Yue, Milan Korda, Ioannis G. Kevrekidis, and Qianxiao Li. "Learning Parametric Koopman Decompositions for Prediction and Control." arXiv preprint arXiv:2310.01124 (2023).](https://arxiv.org/abs/2310.01124)
+[2]: [Guo, Yue, Milan Korda, Ioannis G. Kevrekidis, and Qianxiao Li. "Learning Parametric Koopman Decompositions for Prediction and Control." arXiv preprint arXiv:2310.01124 (2023).](https://arxiv.org/abs/2310.01124)

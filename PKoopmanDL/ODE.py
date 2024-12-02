@@ -7,19 +7,47 @@ from .Factory import *
 class AbstractODE:
 
   def __init__(self, dim, param_dim, rhs):
+    """Initializes the ODE class with the given dimensions and right-hand side function.
+
+    Args:
+      dim (int): The dimension of the system.
+      param_dim (int): The dimension of the parameter space.
+      rhs (torch.Tensor -> torch.Tensor): The right-hand side function of the ODE, which defines the system dynamics.
+    """
     self._dim = dim
     self._param_dim = param_dim
     self._rhs = rhs
 
   def rhs(self, x, u):
+    """Compute the right-hand side of the differential equation.
+
+    Args:
+      x (torch.Tensor): The state tensor.
+      u (torch.Tensor): The parametric input tensor.
+
+    Returns:
+      torch.Tensor: The computed right-hand side of the differential equation.
+    """
     return self._rhs(x, u)
 
   @property
   def dim(self):
+    """
+    Returns the dimension of the system.
+
+    Returns:
+      int: The dimension of the system.
+    """
     return self._dim
 
   @property
   def param_dim(self):
+    """
+    Returns the dimension of the parameters.
+
+    Returns:
+      int: The dimension of the parameters.
+    """
     return self._param_dim
 
 

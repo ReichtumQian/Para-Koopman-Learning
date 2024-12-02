@@ -48,10 +48,10 @@ class FullConnBaseNet(torch.nn.Module):
     """Apply the network to the input `inputs`
 
     Args:
-        inputs (tensor): The input $\mathbb{R}^{N \times N_x}$.
+        inputs (tensor): The input $\mathbb{R}^{N \\times N_x}$.
 
     Returns:
-        tensor: The output $\mathbb{R}^{N \times N_y}$.
+        tensor: The output $\mathbb{R}^{N \\times N_y}$.
     """
     raise NotImplementedError
 
@@ -59,6 +59,14 @@ class FullConnBaseNet(torch.nn.Module):
 class FullConnResNet(FullConnBaseNet):
 
   def forward(self, inputs):
+    """Apply the network to the input `inputs`
+
+    Args:
+        inputs (torch.Tensor): The input $\\mathbb{R}^{N \\times N_x}$.
+
+    Returns:
+        torch.Tensor: The output $\\mathbb{R}^{N \\times N_y}$.
+    """
     if self._normalize_input:
       inputs = self._normalize(inputs)
     hidden_u = self._input_layer(inputs)
@@ -73,6 +81,14 @@ class FullConnResNet(FullConnBaseNet):
 class FullConnNet(FullConnBaseNet):
 
   def forward(self, inputs):
+    """Perform a forward pass through the network.
+
+    Args:
+      inputs (torch.Tensor): The input data to be processed by the network.
+
+    Returns:
+      torch.Tensor: The output of the network after processing the input through the layers.
+    """
     if self._normalize_input:
       inputs = self._normalize(inputs)
     hidden_u = self._input_layer(inputs)

@@ -13,6 +13,21 @@ from .ODESolver import *
 class SolverWrapper:
 
   def __init__(self, config_file):
+    """ Initializes the SolverWrapper instance by loading configuration data from a JSON file.
+
+    Args:
+      config_file (str): The path to the configuration file in JSON format.
+
+    This method performs the following actions:
+
+    - Loads the configuration data from the specified JSON file.
+    - Calls internal methods to read and process various configuration sections:
+      - ODE configuration
+      - ODE solver configuration
+      - Dataset configuration
+      - Dictionary configuration
+      - Solver configuration
+    """
     with open(config_file) as f:
       self._data = json.load(f)
     self._read_ode_config()
@@ -25,6 +40,22 @@ class SolverWrapper:
             observable_func,
             x_sample_func=torch.rand,
             param_sample_func=torch.rand):
+    """
+    Initializes the solver setup by configuring the ODE, dataset, and dictionary.
+
+    Args:
+      observable_func (torch.Tensor -> torch.Tensor): A function that defines the observables for the system.
+      x_sample_func (callable, optional): A function to sample initial conditions. Defaults to torch.rand.
+      param_sample_func (callable, optional): A function to sample parameters. Defaults to torch.rand.
+
+    This method performs the following initializations:
+
+    - Initializes the ordinary differential equation (ODE).
+    - Sets up the ODE solver.
+    - Initializes the dataset using the provided sampling functions.
+    - Configures the dictionary with the given observable function.
+    - Prepares the solver for execution.
+    """
     self._init_ode()
     self._init_ode_solver()
     self._init_dataset(x_sample_func, param_sample_func)
@@ -32,6 +63,15 @@ class SolverWrapper:
     self._init_solver()
 
   def solve(self):
+    """Placeholder method for solving a problem or executing a specific task.
+
+    This method is intended to be overridden by subclasses to provide
+    a concrete implementation of the solving logic. By default, it raises
+    a NotImplementedError to indicate that the method has not been implemented.
+
+    Returns:
+      NotImplementedError: Indicates that the method needs to be implemented in a subclass.
+    """
     return NotImplementedError
 
   def _read_ode_config(self):
@@ -95,6 +135,14 @@ class SolverWrapper:
 class EDMDRBFSolverWrapper(SolverWrapper):
 
   def __init__(self, config_file):
+    """ Initializes the SolverWrapper instance.
+
+    Args:
+      config_file (str): The path to the configuration file.
+
+    Attributes:
+      _use_param_dataset (bool): A flag indicating whether to use a parameterized dataset.
+    """
     self._use_param_dataset = False
     super().__init__(config_file)
 
@@ -116,12 +164,25 @@ class EDMDRBFSolverWrapper(SolverWrapper):
     self.solver = EDMDSolver(self.dictionary)
 
   def solve(self):
+    """Executes the EDMD-RBF method using the provided dataset.
+
+    Returns:
+      Koopman: The result of EDMD method.
+    """
     return self.solver.solve(self.dataset)
 
 
 class EDMDDLSolverWrapper(SolverWrapper):
 
   def __init__(self, config_file):
+    """Initializes the SolverWrapper instance.
+
+    Args:
+      config_file (str): The path to the configuration file.
+
+    Attributes:
+      _use_param_dataset (bool): A flag indicating whether to use a parameterized dataset.
+    """
     self._use_param_dataset = False
     super().__init__(config_file)
 
@@ -164,6 +225,11 @@ class EDMDDLSolverWrapper(SolverWrapper):
     self.solver = EDMDDLSolver(self.dictionary, self.reg, self.reg_final)
 
   def solve(self):
+    """Solves the problem using EDMDDL algorithm with the provided datasets.
+
+    Returns:
+      Koopman: The result of the EDMDDL algorithm.
+    """
     return self.solver.solve(self.train_dataset, self.val_dataset,
                              self.n_epochs, self.batch_size, self.tol,
                              self.dic_lr)
@@ -244,6 +310,11 @@ class ParamKoopmanDLSolverWrapper(SolverWrapper):
     self.K = ParamKoopman(self.dim_output, network)
 
   def solve(self):
+    """Applies the parametric Koopman learning algorithm.
+
+    Returns:
+      ParamKoopman: The result of the parametric Koopman learning algorithm.
+    """
     return self.solver.solve(self.train_dataset, self.val_dataset, self.K,
                              self.n_epochs, self.batch_size, self.tol,
                              self.dic_lr, self.koopman_lr)

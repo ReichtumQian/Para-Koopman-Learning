@@ -116,8 +116,8 @@ nav:
       - Class EDMDRBFSolverWrapper: "ClassReferences/EDMDRBFSolverWrapper.md"
       - Class EDMDDLSolverWrapper: "ClassReferences/EDMDDLSolverWrapper.md"
       - Class ParamKoopmanDLSolverWrapper: "ClassReferences/ParamKoopmanDLSolverWrapper.md"
-    # - ODEs:
-    #   - Class AbstractODE: "ClassReferences/AbstractODE.md"
+    - ODEs:
+      - Class AbstractODE: "ClassReferences/AbstractODE.md"
     - ODE Solvers:
       - Class ODESolver: "ClassReferences/ODESolver.md"
     - Data Management:
